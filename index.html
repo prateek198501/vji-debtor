@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>VJI Khata — Debtor Reminders</title>
+
+<!-- SheetJS for Excel import -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+:root{
+  /* ---- Soft ledger palette ---- */
+  --paper:        #FBF7F0;   /* warm ivory page */
+  --paper-raised: #FFFFFF;
+  --ink:          #28342E;   /* deep teal-charcoal, the "ink" colour */
+  --ink-soft:     #5B6B62;
+  --rule:         #E4DCCB;   /* hairline rule colour, like a ledger line */
+  --rule-strong:  #D6CBAE;
+  --gold:         #B8893D;   /* muted antique gold accent */
+  --gold-soft:    #EFE2C5;
+  --teal:         #2F5D55;   /* deep jewel teal, header colour */
+  --teal-deep:    #20413B;
+  --rose:         #B5675E;   /* dusty rose for overdue — soft, not alarming */
+  --rose-bg:      #F7E9E5;
+  --amber-bg:     #FBF0DC;   /* due-soon band */
+  --green:        #5E7C5A;   /* on-track */
+  --green-bg:     #EAF0E6;
+  --shadow:        0 2px 10px rgba(40,52,46,0.06);
+  --shadow-lift:   0 8px 28px rgba(40,52,46,0.12);
+  --radius:        14px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse 1200px 700px at 10% -10%, #FFFDF8 0%, transparent 60%),
+    var(--paper);
+  color:var(--ink);
+  font-family:'Source Sans 3', Avenir, 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+@font-face{ /* fallback stack only, no external load needed beyond system fonts */ }
+
+h1,h2,h3,.serif{
+  font-family:'Iowan Old Style','Georgia','Noto Serif',serif;
+  font-weight:600;
+  letter-spacing:0.2px;
+}
+
+.numeric{
+  font-family:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing:0.1px;
+}
+
+a{color:inherit;}
+button{font-family:inherit;}
+
+/* ============ LOGIN SCREEN ============ */
+#loginScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.login-card{
+  width:100%;
+  max-width:400px;
+  background:var(--paper-raised);
+  border-radius:20px;
+  box-shadow:var(--shadow-lift);
+  padding:40px 32px 32px;
+  border:1px solid var(--rule);
+  position:relative;
+  overflow:hidden;
+}
+.login-card::before{
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:6px;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--teal) 100%);
+}
+.login-mark{
+  width:56px;height:56px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #D7AF63, var(--gold) 60%, #93672A 100%);
+  margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(184,137,61,0.35);
+}
+.login-mark svg{width:28px;height:28px;}
+.login-title{text-align:center;font-size:22px;color:var(--teal-deep);margin:0 0 2px;}
+.login-sub{text-align:center;color:var(--ink-soft);font-size:13px;margin:0 0 28px;letter-spacing:0.3px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.6px;}
+.field input{
+  width:100%;
+  padding:12px 14px;
+  border:1.5px solid var(--rule-strong);
+  border-radius:10px;
+  font-size:15px;
+  background:#FFFEFB;
+  color:var(--ink);
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(47,93,85,0.12);}
+.login-btn{
+  width:100%;
+  padding:13px;
+  border:none;
+  border-radius:10px;
+  background:var(--teal);
+  color:#FBF7F0;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:6px;
+  transition:background .15s, transform .1s;
+  letter-spacing:0.3px;
+}
+.login-btn:hover{background:var(--teal-deep);}
+.login-btn:active{transform:scale(0.98);}
+.login-error{
+  background:var(--rose-bg);
+  color:#8C453C;
+  border-radius:8px;
+  padding:9px 12px;
+  font-size:13px;
+  margin-bottom:14px;
+  display:none;
+  text-align:center;
+}
+
+/* ============ APP SHELL ============ */
+#app{display:none;min-height:100vh;}
+.topbar{
+  background:var(--teal);
+  color:#FBF7F0;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 12px rgba(0,0,0,0.12);
+}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0;}
+.topbar-mark{
+  width:34px;height:34px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 35% 30%, #D7AF63, var(--gold) 60%, #93672A 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.topbar-mark svg{width:18px;height:18px;}
+.topbar-titles{min-width:0;}
+.topbar-titles .t1{font-family:'Iowan Old Style',Georgia,serif;font-size:17px;font-weight:600;line-height:1.1;}
+.topbar-titles .t2{font-size:11.5px;color:#CFE3DC;letter-spacing:0.3px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.chip-btn{
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.22);
+  color:#FBF7F0;
+  border-radius:9px;
+  padding:8px 13px;
+  font-size:13px;
+  cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  transition:background .15s;
+  white-space:nowrap;
+}
+.chip-btn:hover{background:rgba(255,255,255,0.22);}
+.chip-btn svg{width:15px;height:15px;flex:none;}
+#hideOnMobileLabel{display:inline;}
+
+main{max-width:1180px;margin:0 auto;padding:22px 18px 60px;}
+
+/* ---- Reminder banner ---- */
+.reminder-banner{
+  background:linear-gradient(135deg, var(--amber-bg), #FBF7F0);
+  border:1.5px solid #E9D6A3;
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin-bottom:22px;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  box-shadow:var(--shadow);
+}
+.reminder-banner.is-clear{
+  background:linear-gradient(135deg, var(--green-bg), #FBF7F0);
+  border-color:#CFE0C8;
+}
+.reminder-icon{
+  width:38px;height:38px;border-radius:50%;flex:none;
+  background:var(--gold-soft);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold);
+}
+.reminder-icon svg{width:20px;height:20px;}
+.reminder-banner.is-clear .reminder-icon{background:var(--green-bg);color:var(--green);}
+.reminder-text h3{margin:0 0 3px;font-size:15.5px;color:var(--teal-deep);}
+.reminder-text p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
+.reminder-text .count{color:var(--gold);font-weight:700;}
+.reminder-banner.is-clear .reminder-text .count{color:var(--green);}
+
+/* ---- Stat strip ---- */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+.stat-card{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:12px;
+  padding:14px 16px;
+  box-shadow:var(--shadow);
+}
+.stat-card .label{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-soft);margin-bottom:5px;}
+.stat-card .value{font-size:21px;font-weight:700;color:var(--teal-deep);}
+.stat-card.alert .value{color:var(--rose);}
+.stat-card.warn .value{color:var(--gold);}
+.stat-card.ok .value{color:var(--green);}
+
+/* ---- Controls ---- */
+.controls-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+  align-items:center;
+}
+.search-box{
+  flex:1;
+  min-width:180px;
+  position:relative;
+}
+.search-box input{
+  width:100%;
+  padding:10px 14px 10px 36px;
+  border:1.5px solid var(--rule-strong);
+  border-radius:10px;
+  font-size:14px;
+  background:var(--paper-raised);
+  color:var(--ink);
+  outline:none;
+}
+.search-box input:focus{border-color:var(--teal);}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-soft);}
+.filter-pills{display:flex;gap:7px;flex-wrap:wrap;}
+.pill{
+  padding:8px 14px;
+  border-radius:20px;
+  border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);
+  color:var(--ink-soft);
+  font-size:13px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .15s;
+}
+.pill.active{background:var(--teal);border-color:var(--teal);color:#FBF7F0;}
+.pill .pill-count{opacity:0.75;margin-left:4px;}
+
+.sort-select{
+  padding:9px 12px;
+  border-radius:10px;
+  border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);
+  color:var(--ink);
+  font-size:13px;
+  cursor:pointer;
+}
+
+/* ---- Section heading ---- */
+.section-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin:26px 0 12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--rule);
+}
+.section-head h2{font-size:17px;color:var(--teal-deep);margin:0;}
+.section-head .sub{font-size:12.5px;color:var(--ink-soft);}
+
+/* ---- Party group cards (desktop table-like rows; mobile cards) ---- */
+.party-group{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  margin-bottom:14px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.party-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  cursor:pointer;
+  gap:12px;
+  background:linear-gradient(90deg, #FFFEFB, #FBF7F0);
+}
+.party-head:hover{background:linear-gradient(90deg, #FFFCF2, #F7F1E4);}
+.party-head-left{display:flex;align-items:center;gap:12px;min-width:0;}
+.party-avatar{
+  width:38px;height:38px;border-radius:10px;flex:none;
+  background:var(--teal);
+  color:#FBF7F0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Iowan Old Style',Georgia,serif;
+  font-weight:700;
+  font-size:15px;
+}
+.party-info{min-width:0;}
+.party-name{font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.party-meta{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+.party-head-right{display:flex;align-items:center;gap:14px;flex:none;}
+.party-total{text-align:right;}
+.party-total .amt{font-size:15.5px;font-weight:700;color:var(--teal-deep);}
+.party-total .lbl{font-size:11px;color:var(--ink-soft);}
+.party-badges{display:flex;gap:5px;}
+.badge{
+  font-size:11px;
+  font-weight:700;
+  padding:4px 9px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+.badge.overdue{background:var(--rose-bg);color:#8C453C;}
+.badge.duesoon{background:var(--amber-bg);color:#8A6418;}
+.chev{width:16px;height:16px;color:var(--ink-soft);transition:transform .2s;flex:none;}
+.party-group.open .chev{transform:rotate(180deg);}
+
+.bills-table{display:none;}
+.party-group.open .bills-table{display:block;}
+
+.bills-table table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.bills-table th{
+  text-align:left;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.4px;
+  color:var(--ink-soft);
+  padding:9px 18px;
+  border-top:1px solid var(--rule);
+  background:#FBF9F4;
+  font-weight:600;
+}
+.bills-table td{
+  padding:11px 18px;
+  border-top:1px solid var(--rule);
+  color:var(--ink);
+  vertical-align:middle;
+}
+.bills-table tr:hover td{background:#FBF8F1;}
+.bills-table .amt-cell{font-weight:600;text-align:right;}
+.status-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+}
+.status-chip.overdue{background:var(--rose-bg);color:#8C453C;}
+.status-chip.duesoon{background:var(--amber-bg);color:#8A6418;}
+.status-chip.upcoming{background:var(--green-bg);color:var(--green);}
+.status-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+/* mobile bill cards (hidden on desktop) */
+.bill-cards{display:none;padding:4px 12px 12px;}
+.bill-card{
+  border-top:1px solid var(--rule);
+  padding:12px 6px;
+}
+.bill-card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+.bill-card .ref{font-weight:600;font-size:13.5px;}
+.bill-card .amt{font-weight:700;font-size:14.5px;color:var(--teal-deep);}
+.bill-card .meta-line{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);}
+
+.empty-state{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--ink-soft);
+}
+.empty-state svg{width:46px;height:46px;color:var(--rule-strong);margin-bottom:12px;}
+.empty-state h3{color:var(--teal-deep);margin:0 0 6px;font-size:16px;}
+.empty-state p{margin:0;font-size:13.5px;}
+
+/* ---- Import modal ---- */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(32,41,36,0.5);
+  z-index:100;
+  align-items:flex-start;justify-content:center;
+  padding:16px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:var(--paper-raised);
+  border-radius:18px;
+  max-width:460px;
+  width:100%;
+  padding:22px;
+  box-shadow:var(--shadow-lift);
+  margin:auto;
+  max-height:none;
+}
+@media(max-width:600px){
+  .modal-overlay{ padding:10px; align-items:flex-start; }
+  .modal-box{ padding:16px; border-radius:14px; margin:8px auto; }
+}
+.modal-box h3{margin:0 0 8px;color:var(--teal-deep);font-size:18px;}
+.modal-box p{margin:0 0 18px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;}
+.modal-box .warn-box{
+  background:var(--rose-bg);
+  border-radius:10px;
+  padding:11px 13px;
+  font-size:12.5px;
+  color:#8C453C;
+  margin-bottom:18px;
+  line-height:1.5;
+}
+.drop-zone{
+  border:2px dashed var(--rule-strong);
+  border-radius:12px;
+  padding:28px 18px;
+  text-align:center;
+  cursor:pointer;
+  transition:border-color .15s, background .15s;
+  margin-bottom:16px;
+}
+.drop-zone:hover, .drop-zone.drag{border-color:var(--teal);background:#F7FAF8;}
+.drop-zone svg{width:30px;height:30px;color:var(--gold);margin-bottom:8px;}
+.drop-zone .dz-text{font-size:13.5px;color:var(--ink);font-weight:600;}
+.drop-zone .dz-sub{font-size:12px;color:var(--ink-soft);margin-top:3px;}
+#fileInput{display:none;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+.btn-secondary{
+  padding:10px 16px;border-radius:9px;border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);color:var(--ink-soft);font-size:13.5px;cursor:pointer;
+}
+.btn-primary{
+  padding:10px 18px;border-radius:9px;border:none;
+  background:var(--teal);color:#FBF7F0;font-size:13.5px;font-weight:600;cursor:pointer;
+}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+.import-status{font-size:12.5px;margin-top:4px;min-height:18px;color:var(--ink-soft);}
+.import-status.ok{color:var(--green);}
+.import-status.err{color:#8C453C;}
+
+/* ---- View tabs (List / Calendar) ---- */
+.view-tabs{
+  display:flex;
+  gap:6px;
+  margin-bottom:18px;
+  border-bottom:1.5px solid var(--rule);
+}
+.view-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:10px 16px;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--ink-soft);
+  cursor:pointer;
+  border-bottom:2.5px solid transparent;
+  margin-bottom:-1.5px;
+  transition:color .15s, border-color .15s;
+}
+.view-tab svg{width:15px;height:15px;}
+.view-tab:hover{color:var(--teal-deep);}
+.view-tab.active{color:var(--teal-deep);border-bottom-color:var(--gold);}
+
+/* ---- Calendar legend ---- */
+.cal-legend{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+  font-size:12.5px;
+  color:var(--ink-soft);
+}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.legend-dot.overdue{background:var(--rose);}
+.legend-dot.duesoon{background:var(--gold);}
+.legend-dot.upcoming{background:var(--green);}
+.legend-dot.reminder{background:var(--teal);}
+
+/* ---- Calendar nav ---- */
+.cal-nav{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+.cal-nav-btn{
+  width:34px;height:34px;
+  border-radius:9px;
+  border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);
+  color:var(--teal-deep);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background .15s;
+}
+.cal-nav-btn:hover{background:var(--gold-soft);}
+.cal-nav-btn svg{width:16px;height:16px;}
+.cal-month-label{
+  font-family:'Iowan Old Style',Georgia,serif;
+  font-size:18px;
+  font-weight:600;
+  color:var(--teal-deep);
+  min-width:170px;
+}
+.cal-today-btn{
+  margin-left:auto;
+  padding:8px 14px;
+  border-radius:9px;
+  border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);
+  color:var(--ink-soft);
+  font-size:12.5px;
+  cursor:pointer;
+}
+.cal-today-btn:hover{border-color:var(--teal);color:var(--teal-deep);}
+
+/* ---- Calendar grid ---- */
+.cal-grid-wrap{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.cal-weekday-row{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  background:#FBF9F4;
+  border-bottom:1px solid var(--rule);
+}
+.cal-weekday-row div{
+  padding:9px 0;
+  text-align:center;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.4px;
+  color:var(--ink-soft);
+  font-weight:600;
+}
+.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+}
+.cal-cell{
+  min-height:84px;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  padding:7px 6px;
+  cursor:pointer;
+  transition:background .12s;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.cal-cell:nth-child(7n){border-right:none;}
+.cal-cell:hover{background:#FBF8F1;}
+.cal-cell.outside{background:#FBF9F5;color:var(--rule-strong);}
+.cal-cell.outside .cal-daynum{color:var(--rule-strong);}
+.cal-cell.is-today{background:var(--gold-soft);}
+.cal-cell.is-today .cal-daynum{color:var(--teal-deep);font-weight:800;}
+.cal-cell.selected{box-shadow:inset 0 0 0 2px var(--teal);}
+.cal-cell.is-monday{background:linear-gradient(180deg, #FBF7F0, #F7F1E2);}
+.cal-cell.is-monday.outside{background:#FBF9F5;}
+.cal-daynum{font-size:12.5px;font-weight:600;color:var(--ink);}
+.cal-monday-tag{
+  font-size:9px;
+  color:var(--gold);
+  font-weight:700;
+  letter-spacing:0.3px;
+  text-transform:uppercase;
+}
+.cal-dots{display:flex;flex-wrap:wrap;gap:3px;margin-top:auto;}
+.cal-dot{width:7px;height:7px;border-radius:50%;flex:none;}
+.cal-dot.overdue{background:var(--rose);}
+.cal-dot.duesoon{background:var(--gold);}
+.cal-dot.upcoming{background:var(--green);}
+.cal-dot.reminder{background:var(--teal);}
+.cal-more{font-size:10px;color:var(--ink-soft);}
+.cal-amt-tag{
+  font-size:9.5px;
+  color:var(--ink-soft);
+  font-weight:600;
+}
+
+/* ---- Day detail panel ---- */
+.cal-day-detail{
+  margin-top:18px;
+}
+.cal-day-detail .ddp-empty{
+  text-align:center;
+  padding:30px 16px;
+  color:var(--ink-soft);
+  font-size:13.5px;
+  background:var(--paper-raised);
+  border:1px dashed var(--rule-strong);
+  border-radius:var(--radius);
+}
+.ddp-card{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  box-shadow:var(--shadow);
+}
+.ddp-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--rule);
+}
+.ddp-head h3{margin:0;font-size:15.5px;color:var(--teal-deep);}
+.ddp-head .ddp-date{font-size:12.5px;color:var(--ink-soft);}
+.ddp-section-label{
+  font-size:11px;text-transform:uppercase;letter-spacing:0.5px;
+  color:var(--ink-soft);font-weight:600;
+  margin:14px 0 8px;
+}
+.ddp-section-label:first-of-type{margin-top:0;}
+.ddp-row{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;
+  padding:9px 0;
+  border-top:1px solid var(--rule);
+}
+.ddp-row:first-child{border-top:none;}
+.ddp-row-left{min-width:0;}
+.ddp-row .ddp-party{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ddp-row .ddp-ref{font-size:11.5px;color:var(--ink-soft);}
+.ddp-row-right{text-align:right;flex:none;}
+.ddp-row .ddp-amt{font-size:13.5px;font-weight:700;color:var(--teal-deep);}
+
+footer.disclaimer{
+  text-align:center;font-size:11.5px;color:var(--ink-soft);
+  padding:18px;opacity:0.8;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:760px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .topbar-titles .t2{display:none;}
+  #hideOnMobileLabel{display:none;}
+  .bills-table{display:none !important;}
+  .party-group.open .bill-cards{display:block;}
+  .party-total .lbl{display:none;}
+  main{padding:16px 12px 50px;}
+  .party-head{padding:13px 14px;}
+  .party-name{font-size:14px;}
+  .cal-cell{min-height:60px;padding:5px 4px;}
+  .cal-amt-tag{display:none;}
+  .cal-weekday-row div{font-size:9.5px;}
+  .cal-month-label{font-size:15px;min-width:120px;}
+  .cal-legend{font-size:11px;gap:10px;}
+  .view-tab{padding:9px 12px;font-size:12.5px;}
+}
+@media (max-width:480px){
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:9px;}
+  .stat-card{padding:11px 12px;}
+  .stat-card .value{font-size:18px;}
+  .cal-cell{min-height:48px;}
+  .cal-daynum{font-size:11px;}
+  .cal-dot{width:6px;height:6px;}
+  .cal-nav{flex-wrap:wrap;}
+  .cal-today-btn{margin-left:0;order:5;}
+}
+
+
+/* ---- Salesperson tabs (admin only) ---- */
+.sp-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+  padding:14px 16px;
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  align-items:center;
+}
+.sp-tabs-label{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
+  color:var(--ink-soft);
+  margin-right:4px;
+  flex:none;
+}
+.sp-tab{
+  padding:7px 14px;
+  border-radius:20px;
+  border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);
+  color:var(--ink-soft);
+  font-size:13px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .15s;
+  font-family:inherit;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.sp-tab .sp-count{
+  background:rgba(0,0,0,0.08);
+  border-radius:20px;
+  padding:1px 7px;
+  font-size:11px;
+  font-weight:700;
+}
+.sp-tab.active{
+  background:var(--teal);
+  border-color:var(--teal);
+  color:#FBF7F0;
+}
+.sp-tab.active .sp-count{background:rgba(255,255,255,0.2);}
+.sp-tab:hover:not(.active){border-color:var(--teal);color:var(--teal-deep);}
+
+/* ---- Overdue slider ---- */
+.slider-wrap{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:14px 18px 16px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.slider-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.slider-title{
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  color:var(--ink-soft);
+}
+.slider-value-display{
+  font-size:13px;
+  font-weight:700;
+  color:var(--teal-deep);
+  background:var(--gold-soft);
+  padding:3px 12px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+.slider-track-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.slider-edge-label{
+  font-size:11px;
+  color:var(--ink-soft);
+  flex:none;
+  width:36px;
+  text-align:center;
+}
+.slider-edge-label:last-child{text-align:right;}
+input[type=range].overdue-slider{
+  flex:1;
+  height:5px;
+  -webkit-appearance:none;
+  appearance:none;
+  background:linear-gradient(90deg, var(--rose) var(--pct,0%), var(--rule-strong) var(--pct,0%));
+  border-radius:4px;
+  outline:none;
+  cursor:pointer;
+}
+input[type=range].overdue-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:18px; height:18px;
+  border-radius:50%;
+  background:var(--teal);
+  border:2.5px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+  cursor:pointer;
+}
+input[type=range].overdue-slider::-moz-range-thumb{
+  width:18px; height:18px;
+  border-radius:50%;
+  background:var(--teal);
+  border:2.5px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+  cursor:pointer;
+  border:2.5px solid #fff;
+}
+.slider-ticks{
+  display:flex;
+  justify-content:space-between;
+  padding:4px 36px 0;
+  font-size:10px;
+  color:var(--ink-soft);
+}
+
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+/* ---- Date range filter bar ---- */
+.date-range-bar{
+  background:var(--paper-raised);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:13px 16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.date-range-bar .dr-label{
+  font-size:12px;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.5px;color:var(--ink-soft);white-space:nowrap;flex:none;
+}
+.date-range-bar input[type=date]{
+  padding:8px 10px;
+  border:1.5px solid var(--rule-strong);
+  border-radius:9px;
+  font-size:13px;
+  background:var(--paper-raised);
+  color:var(--ink);
+  outline:none;
+  cursor:pointer;
+  flex:1;min-width:130px;
+}
+.date-range-bar input[type=date]:focus{ border-color:var(--teal); }
+.dr-sep{ color:var(--ink-soft);font-size:14px;flex:none; }
+.dr-clear{
+  padding:7px 12px;border-radius:9px;border:1.5px solid var(--rule-strong);
+  background:var(--paper-raised);color:var(--ink-soft);font-size:12.5px;
+  cursor:pointer;white-space:nowrap;flex:none;
+}
+.dr-clear:hover{ border-color:var(--rose);color:var(--rose); }
+.dr-summary{
+  width:100%;
+  margin-top:4px;
+  display:none;
+  background:linear-gradient(135deg,var(--teal),var(--teal-deep));
+  border-radius:10px;
+  padding:10px 14px;
+  display:none;
+  gap:18px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.dr-summary.visible{ display:flex; }
+.dr-stat{ color:#FBF7F0;font-size:13px; }
+.dr-stat span{ font-weight:700;font-size:15px; }
+
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#FBF7F0" stroke-width="1.8"><path d="M6 3h12l3 5-9 13L3 8l3-5Z"/><path d="M3 8h18M9 3l3 5 3-5M12 8l-3 13M12 8l3 13"/></svg>
+    </div>
+    <h1 class="login-title">VJI Khata</h1>
+    <p class="login-sub">Valentine Jewellery International &middot; Debtor Ledger</p>
+
+    <div class="login-error" id="loginError">Username or password didn't match. Please try again.</div>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="e.g. hansraj" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button type="submit" class="login-btn">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FBF7F0" stroke-width="1.8"><path d="M6 3h12l3 5-9 13L3 8l3-5Z"/><path d="M3 8h18M9 3l3 5 3-5M12 8l-3 13M12 8l3 13"/></svg>
+      </div>
+      <div class="topbar-titles">
+        <div class="t1" id="welcomeName">Welcome</div>
+        <div class="t2" id="todayLine">Monday, June 22, 2026</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="chip-btn" id="syncBtn" style="display:none;" title="Export bills.json for GitHub upload">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span id="hideOnMobileLabel">Export JSON</span>
+      </button>
+      <button class="chip-btn" id="importBtn" style="display:none;" title="Import from local Excel file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <span id="hideOnMobileLabel">Import Excel</span>
+      </button>
+      <button class="chip-btn" id="logoutBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span id="hideOnMobileLabel2">Logout</span>
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Reminder banner -->
+    <div class="reminder-banner" id="reminderBanner"></div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow"></div>
+
+
+    <!-- Salesperson tabs (admin only) -->
+    <div class="sp-tabs" id="spTabs" style="display:none;">
+      <span class="sp-tabs-label">Sales Person</span>
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Overdue days slider (admin only) -->
+    <div class="slider-wrap" id="sliderWrap" style="display:none;">
+      <div class="slider-header">
+        <span class="slider-title">Filter by Overdue Duration</span>
+        <span class="slider-value-display" id="sliderLabel">Show all overdue bills</span>
+      </div>
+      <div class="slider-track-row">
+        <span class="slider-edge-label">0d</span>
+        <input type="range" class="overdue-slider" id="overdueSlider" min="0" max="1000" value="0" step="1">
+        <span class="slider-edge-label">1000d</span>
+      </div>
+      <div class="slider-ticks">
+        <span>0</span><span>100</span><span>200</span><span>300</span><span>500</span><span>750</span><span>1000</span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search party name or bill reference…">
+      </div>
+      <div class="filter-pills" id="filterPills">
+        <div class="pill active" data-filter="all">All</div>
+        <div class="pill" data-filter="overdue">Overdue</div>
+        <div class="pill" data-filter="duesoon">Due in 7 days</div>
+        <div class="pill" data-filter="upcoming">Upcoming</div>
+      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="overdue_desc">Sort: Most overdue first</option>
+        <option value="amount_desc">Sort: Highest amount first</option>
+        <option value="due_asc">Sort: Due date (soonest)</option>
+        <option value="name_asc">Sort: Party name (A–Z)</option>
+        <option value="salesperson_asc">Sort: Sales person (A–Z)</option>
+      </select>
+    </div>
+
+    <!-- Date range filter -->
+    <div class="date-range-bar" id="dateRangeBar">
+      <span class="dr-label">📅 Invoice Date</span>
+      <input type="date" id="drFrom" title="From date">
+      <span class="dr-sep">→</span>
+      <input type="date" id="drTo" title="To date">
+      <button class="dr-clear" id="drClear">✕ Clear</button>
+      <div class="dr-summary" id="drSummary">
+        <div class="dr-stat">Bills: <span id="drCount">0</span></div>
+        <div class="dr-stat">Parties: <span id="drParties">0</span></div>
+        <div class="dr-stat">Total Amount: <span id="drTotal">₹0</span></div>
+        <div class="dr-stat">Overdue: <span id="drOverdue">0</span></div>
+      </div>
+    </div>
+
+    <div class="view-tabs" id="viewTabs">
+      <div class="view-tab active" data-view="list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        List
+      </div>
+      <div class="view-tab" data-view="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Calendar
+      </div>
+    </div>
+
+    <div id="listView">
+      <div class="section-head">
+        <h2 id="sectionTitle">Accounts</h2>
+        <div class="sub" id="sectionSub"></div>
+      </div>
+
+      <div id="groupsContainer"></div>
+    </div>
+
+    <div id="calendarView" style="display:none;">
+      <div class="section-head">
+        <h2>Monthly Due-Date Calendar</h2>
+        <div class="sub" id="calendarSub"></div>
+      </div>
+
+      <div class="cal-legend">
+        <span class="legend-item"><span class="legend-dot overdue"></span>Overdue</span>
+        <span class="legend-item"><span class="legend-dot duesoon"></span>Due soon</span>
+        <span class="legend-item"><span class="legend-dot upcoming"></span>Upcoming</span>
+        <span class="legend-item"><span class="legend-dot reminder"></span>7-day follow-up reminder</span>
+      </div>
+
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="calPrev" aria-label="Previous month">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="cal-month-label" id="calMonthLabel">June 2026</div>
+        <button class="cal-nav-btn" id="calNext" aria-label="Next month">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <button class="cal-today-btn" id="calToday">Today</button>
+      </div>
+
+      <div class="cal-grid-wrap">
+        <div class="cal-weekday-row">
+          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <div class="cal-day-detail" id="calDayDetail"></div>
+    </div>
+  </main>
+
+  <footer class="disclaimer">VJI Khata is an internal reminder tool. Figures are sourced from the latest imported Bills Receivable sheet — please verify against accounts before following up with a party.</footer>
+</div>
+
+
+<!-- ============ EXPORT MODAL ============ -->
+<div class="modal-overlay" id="syncModal">
+  <div class="modal-box" style="max-width:520px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h3 style="margin:0;">📤 Export &amp; Sync</h3>
+      <button class="btn-secondary" id="cancelSync" style="padding:6px 14px;font-size:13px;">✕ Close</button>
+    </div>
+
+    <!-- Fetch Now — always at top, visible to all -->
+    <div style="background:var(--green-bg);border:1px solid #CFE0C8;border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-weight:700;font-size:13px;color:#3A5C36;margin-bottom:6px;">🔄 Fetch Latest Data from GitHub</div>
+      <p style="font-size:12.5px;color:#3A5C36;margin:0 0 10px;">Tap below to immediately pull the latest bills from your GitHub repo. Works on all devices — no setup needed.</p>
+      <input type="url" id="githubRawUrl" value="https://raw.githubusercontent.com/prateek198501/vji-khata/main/bills.json"
+        style="width:100%;padding:10px 12px;border:1.5px solid #CFE0C8;border-radius:9px;font-size:11.5px;background:#F4FAF4;color:var(--ink-soft);outline:none;margin-bottom:8px;word-break:break-all;" readonly>
+      <button class="btn-primary" id="saveGithubUrlBtn" style="width:100%;background:var(--teal);border:none;">🔄 Fetch Latest Data Now</button>
+      <div class="import-status" id="githubUrlStatus" style="margin-top:6px;"></div>
+    </div>
+
+    <div id="adminOnlySteps">
+    <!-- STEP 1 -->
+    <div style="background:#F7F9F7;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--teal-deep);margin-bottom:10px;">① Import Excel file (Mac/PC only)</div>
+      <div class="drop-zone" id="syncDropZone" style="padding:18px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <div class="dz-text">Click to choose Excel file, or drag here</div>
+        <div class="dz-sub">.xlsx Bills Receivable export</div>
+      </div>
+      <input type="file" id="syncFileInput" accept=".xlsx,.xls" style="display:none;">
+      <div class="import-status" id="syncReadStatus"></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div style="background:#F7F9F7;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--teal-deep);margin-bottom:8px;">② Download bills.json</div>
+      <button class="btn-primary" id="downloadJsonBtn" disabled style="width:100%;">⬇ Download bills.json</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div style="background:#F7F9F7;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--teal-deep);margin-bottom:8px;">③ Upload bills.json to GitHub</div>
+      <ol style="font-size:13px;color:var(--ink-soft);line-height:2;margin:0 0 0 16px;padding:0;">
+        <li>Go to your GitHub repo → <b>Add file → Upload files</b></li>
+        <li>Drag <code style="background:#eee;padding:1px 5px;border-radius:4px;">bills.json</code> into the box</li>
+        <li>Click <b>Commit changes</b> — all devices update automatically!</li>
+      </ol>
+    </div>
+    </div><!-- end adminOnlySteps -->
+
+  </div>
+</div>
+
+<!-- ============ IMPORT MODAL ============ -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal-box">
+    <h3>Import Bills Receivable</h3>
+    <p>Upload the latest <b>Bills Receivable</b> Excel export. This will <b>replace all existing debtor data</b> in the app — the previous list will be discarded. Only the master/admin login can do this; sales rep accounts never see this option.</p>
+    <div class="warn-box">⚠ This action cannot be undone. Make sure you're uploading the correct, most recent file before continuing.</div>
+    <div class="drop-zone" id="dropZone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      <div class="dz-text">Click to choose a file, or drag it here</div>
+      <div class="dz-sub">.xlsx exported from the Bills Receivable report</div>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls">
+    <div class="import-status" id="importStatus"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelImport">Cancel</button>
+      <button class="btn-primary" id="confirmImport" disabled>Replace data</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   EMBEDDED DEFAULT DATA — parsed from VJI's "Bills Receivable" report
+   Each record: party, rep, date (invoice), ref, amount, due (due date)
+   ===================================================================== */
+const DEFAULT_BILLS = [{"party":"Abha Sanjay Bafna","rep":"N/A","date":"2026-04-27","ref":"VJIB/2627/035","amount":670530.0,"due":"2026-05-27","overdue_in_sheet":"7"},{"party":"Ab Jewels","rep":"Hansraj Kunteta","date":"2026-05-13","ref":"VJIB/2627/061","amount":2307356.0,"due":"2026-08-11","overdue_in_sheet":""},{"party":"Ab Jewels","rep":"Hansraj Kunteta","date":"2026-05-28","ref":"VJIB/2627/079","amount":217230.0,"due":"2026-08-26","overdue_in_sheet":""},{"party":"A-Jewels","rep":"Shailendra Jain","date":"2026-04-30","ref":"VJIB/2627/038","amount":2329075.0,"due":"2026-06-29","overdue_in_sheet":""},{"party":"AKM Mehra Sons Jewellers","rep":"Hansraj Kunteta","date":"2024-05-02","ref":"VJIB/24-25/028","amount":494497.0,"due":"2024-07-01","overdue_in_sheet":"702"},{"party":"AKM Mehra Sons Jewellers","rep":"Hansraj Kunteta","date":"2024-05-17","ref":"VJIB/24-25/037","amount":2025942.0,"due":"2024-07-16","overdue_in_sheet":"687"},{"party":"AKM Mehra Sons Jewellers","rep":"Hansraj Kunteta","date":"2024-06-14","ref":"VJIB/24-25/055","amount":422662.0,"due":"2024-08-13","overdue_in_sheet":"659"},{"party":"AKM Mehra Sons Jewellers","rep":"Hansraj Kunteta","date":"2024-07-10","ref":"VJIB/24-25/070","amount":26631.0,"due":"2024-09-08","overdue_in_sheet":"633"},{"party":"AKM Mehra Sons Jewellers","rep":"Hansraj Kunteta","date":"2024-07-23","ref":"VJIB/24-25/076","amount":957123.0,"due":"2024-09-21","overdue_in_sheet":"620"},{"party":"AKM Mehra Sons Jewellers","rep":"Hansraj Kunteta","date":"2024-09-06","ref":"VJIB/24-25/104","amount":863180.0,"due":"2024-11-05","overdue_in_sheet":"575"},{"party":"Alankar Jewel Arts Pvt Ltd","rep":"Shailendra Jain","date":"2026-05-30","ref":"VJIB/2627/084","amount":4456665.0,"due":"2026-07-29","overdue_in_sheet":""},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-01-20","ref":"VJIB/25-26/312","amount":3059706.0,"due":"2026-03-21","overdue_in_sheet":"74"},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-02-03","ref":"VJIB/25-26/340","amount":204876.0,"due":"2026-04-04","overdue_in_sheet":"60"},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-02-16","ref":"VJIB/25-26/359","amount":501879.0,"due":"2026-04-17","overdue_in_sheet":"47"},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-03-13","ref":"VJIB/25-26/390","amount":162729.0,"due":"2026-05-12","overdue_in_sheet":"22"},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-04-03","ref":"VJIB/2627/008","amount":4082437.0,"due":"2026-06-02","overdue_in_sheet":"1"},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-04-10","ref":"VJIB/2627/020","amount":185230.0,"due":"2026-06-09","overdue_in_sheet":""},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-05-11","ref":"VJIB/2627/056","amount":922356.0,"due":"2026-07-10","overdue_in_sheet":""},{"party":"Anmol Jewellers","rep":"Hansraj Kunteta","date":"2026-05-15","ref":"VJIB/2627/063","amount":190778.0,"due":"2026-07-14","overdue_in_sheet":""},{"party":"Aurum by Sethis","rep":"Hansraj Kunteta","date":"2026-05-06","ref":"VJIB/2627/053","amount":701919.0,"due":"2026-07-05","overdue_in_sheet":""},{"party":"Bhandari Jewellers","rep":"N/A","date":"2026-02-20","ref":"VJIB/25-26/370","amount":3605427.0,"due":"2026-04-21","overdue_in_sheet":"43"},{"party":"Bhola Sons Jewellers","rep":"Hansraj Kunteta","date":"2026-03-06","ref":"VJIB/25-26/397","amount":79626.0,"due":"2026-06-04","overdue_in_sheet":""},{"party":"Bhola Sons Jewellers","rep":"Hansraj Kunteta","date":"2026-04-02","ref":"VJIB/2627/003","amount":192092.0,"due":"2026-07-01","overdue_in_sheet":""},{"party":"Bhola Sons Jewellers","rep":"Hansraj Kunteta","date":"2026-04-07","ref":"VJIB/2627/011","amount":171377.0,"due":"2026-07-06","overdue_in_sheet":""},{"party":"Bhola Sons Jewellers","rep":"Hansraj Kunteta","date":"2026-04-11","ref":"VJIB/2627/021","amount":197894.0,"due":"2026-07-10","overdue_in_sheet":""},{"party":"Bhola Sons Jewellers","rep":"Hansraj Kunteta","date":"2026-05-25","ref":"VJIB/2627/070","amount":865243.0,"due":"2026-08-23","overdue_in_sheet":""},{"party":"Carlos Castellano E Hijos SL ( Export )","rep":"N/A","date":"2026-02-10","ref":"VJIB/25-26/EX07","amount":255585.82,"due":"2026-05-11","overdue_in_sheet":"23"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-08-14","ref":"VJIB/25-26/113","amount":5221974.0,"due":"2025-10-13","overdue_in_sheet":"233"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-09-16","ref":"VJIB/25-26/161","amount":83137.0,"due":"2025-11-15","overdue_in_sheet":"200"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-11-04","ref":"VJIB/25-26/217","amount":104577.0,"due":"2026-01-03","overdue_in_sheet":"151"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-11-28","ref":"VJIB/25-26/248","amount":138948.0,"due":"2026-01-27","overdue_in_sheet":"127"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-12-27","ref":"VJIB/25-26/276","amount":432971.0,"due":"2026-02-25","overdue_in_sheet":"98"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-19","ref":"VJIB/25-26/307","amount":126516.0,"due":"2026-03-20","overdue_in_sheet":"75"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-02-18","ref":"VJIB/25-26/362","amount":843352.0,"due":"2026-04-19","overdue_in_sheet":"45"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-02-19","ref":"VJIB/25-26/364","amount":10970385.0,"due":"2026-04-20","overdue_in_sheet":"44"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-03-07","ref":"VJIB/25-26/382","amount":466587.0,"due":"2026-05-06","overdue_in_sheet":"28"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-03-24","ref":"VJIB/25-26/399","amount":15304488.0,"due":"2026-05-23","overdue_in_sheet":"11"},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-04-23","ref":"VJIB/2627/032","amount":71670.0,"due":"2026-06-22","overdue_in_sheet":""},{"party":"C.H. Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-05-02","ref":"VJIB/2627/045","amount":1968501.0,"due":"2026-07-01","overdue_in_sheet":""},{"party":"Divya Khandelwal Debtors","rep":"N/A","date":"2025-11-20","ref":"VJIB/25-26/240","amount":2474694.0,"due":"2026-01-19","overdue_in_sheet":"135"},{"party":"Divya Khandelwal Debtors","rep":"N/A","date":"2025-11-26","ref":"VJIB/25-26/245","amount":437352.0,"due":"2026-01-25","overdue_in_sheet":"129"},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-03-05","ref":"VJIB/25-26/378","amount":692423.0,"due":"2026-05-04","overdue_in_sheet":"30"},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-03-12","ref":"VJIB/25-26/387","amount":4665824.0,"due":"2026-05-11","overdue_in_sheet":"23"},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-03-20","ref":"VJIB/25-26/393","amount":2259658.0,"due":"2026-05-19","overdue_in_sheet":"15"},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-03-26","ref":"VJIB/25-26/402","amount":882303.0,"due":"2026-05-25","overdue_in_sheet":"9"},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-04-09","ref":"VJIB/2627/017","amount":568406.0,"due":"2026-06-08","overdue_in_sheet":""},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-05-19","ref":"VJIB/2627/066","amount":1327963.0,"due":"2026-07-18","overdue_in_sheet":""},{"party":"D.P. Abhushan Ltd","rep":"Hansraj Kunteta","date":"2026-05-27","ref":"VJIB/2627/075","amount":1306286.0,"due":"2026-07-26","overdue_in_sheet":""},{"party":"D.P Jewelline Pvt Ltd","rep":"N/A","date":"2026-05-01","ref":"VJIB/2627/042","amount":3914000.0,"due":"2026-06-30","overdue_in_sheet":""},{"party":"Fine Gems And Jewels ( Export )","rep":"N/A","date":"2025-09-08","ref":"VJIB/25-26/EX04","amount":5919683.0,"due":"2025-11-07","overdue_in_sheet":"208"},{"party":"Fortofino","rep":"N/A","date":"2025-01-02","ref":"VJIB/24-25/210","amount":98963.0,"due":"2025-03-03","overdue_in_sheet":"457"},{"party":"Frontier Jewellers","rep":"Shailendra Jain","date":"2025-09-15","ref":"VJIB/25-26/159","amount":742.0,"due":"2025-11-14","overdue_in_sheet":"201"},{"party":"Frontier Jewellers","rep":"Shailendra Jain","date":"2026-01-13","ref":"VJIB/25-26/295","amount":2272843.0,"due":"2026-03-14","overdue_in_sheet":"81"},{"party":"Frontier Jewellers","rep":"Shailendra Jain","date":"2026-01-23","ref":"VJIB/25-26/320","amount":61959.0,"due":"2026-03-24","overdue_in_sheet":"71"},{"party":"Gandhi Jewellers","rep":"Hansraj Kunteta","date":"2026-05-27","ref":"VJIB/2627/076","amount":2471291.0,"due":"2026-07-26","overdue_in_sheet":""},{"party":"GDK Jewels Pvt Ltd","rep":"Shailendra Jain","date":"2026-04-09","ref":"VJIB/2627/019","amount":2119803.0,"due":"2026-06-08","overdue_in_sheet":""},{"party":"Gehna Gems & Jewels Pvt Ltd","rep":"Shailendra Jain","date":"2026-04-18","ref":"VJIB/2627/027","amount":2165.0,"due":"2026-06-17","overdue_in_sheet":""},{"party":"Gem House","rep":"N/A","date":"2026-02-13","ref":"VJIB/25-26/356","amount":1966068.0,"due":"2026-03-30","overdue_in_sheet":"65"},{"party":"Gem House","rep":"N/A","date":"2026-02-19","ref":"VJIB/25-26/367","amount":8963954.0,"due":"2026-04-05","overdue_in_sheet":"59"},{"party":"Gem House","rep":"N/A","date":"2026-04-06","ref":"VJIB/2627/010","amount":12230452.0,"due":"2026-05-21","overdue_in_sheet":"13"},{"party":"Gem Plaza Private Limited","rep":"N/A","date":"2026-01-19","ref":"VJIB/25-26/305","amount":267800.0,"due":"2026-03-05","overdue_in_sheet":"90"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2025-11-03","ref":"VJIB/25-26/216","amount":1485828.0,"due":"2026-01-02","overdue_in_sheet":"152"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2025-11-06","ref":"VJIB/25-26/223","amount":209442.0,"due":"2026-01-05","overdue_in_sheet":"149"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2025-11-19","ref":"VJIB/25-26/237","amount":15656000.0,"due":"2026-01-18","overdue_in_sheet":"136"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2025-12-10","ref":"VJIB/25-26/262","amount":296944.0,"due":"2026-02-08","overdue_in_sheet":"115"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2026-01-03","ref":"VJIB/25-26/282","amount":11039752.0,"due":"2026-03-04","overdue_in_sheet":"91"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2026-03-05","ref":"VJIB/25-26/377","amount":3802396.0,"due":"2026-05-04","overdue_in_sheet":"30"},{"party":"Gems and Jewels Palace","rep":"Shailendra Jain","date":"2026-03-28","ref":"VJIB/25-26/405","amount":6872.0,"due":"2026-05-27","overdue_in_sheet":"7"},{"party":"Gems Paradise","rep":"N/A","date":"2026-03-11","ref":"VJIB/25-26/385","amount":10511231.0,"due":"2026-04-25","overdue_in_sheet":"39"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-08-13","ref":"VJIB/25-26/107","amount":2746736.0,"due":"2025-11-11","overdue_in_sheet":"204"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-08-26","ref":"VJIB/25-26/126","amount":1694049.0,"due":"2025-11-24","overdue_in_sheet":"191"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-09-03","ref":"VJIB/25-26/139","amount":369260.0,"due":"2025-12-02","overdue_in_sheet":"183"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-09-04","ref":"VJIB/25-26/145","amount":1747764.0,"due":"2025-12-03","overdue_in_sheet":"182"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-09-05","ref":"VJIB/25-26/146","amount":1324717.0,"due":"2025-12-04","overdue_in_sheet":"181"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-09-19","ref":"VJIB/25-26/162","amount":261878.0,"due":"2025-12-18","overdue_in_sheet":"167"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-09-25","ref":"VJIB/25-26/171","amount":1805.0,"due":"2025-12-24","overdue_in_sheet":"161"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-10-09","ref":"VJIB/25-26/194","amount":155228.0,"due":"2026-01-07","overdue_in_sheet":"147"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-11-05","ref":"VJIB/25-26/221","amount":53600.0,"due":"2026-02-03","overdue_in_sheet":"120"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-16","ref":"VJIB/25-26/300","amount":158913.0,"due":"2026-04-16","overdue_in_sheet":"48"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-21","ref":"VJIB/25-26/314","amount":75002.0,"due":"2026-04-21","overdue_in_sheet":"43"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-22","ref":"VJIB/25-26/316","amount":196773.0,"due":"2026-04-22","overdue_in_sheet":"42"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-29","ref":"VJIB/25-26/332","amount":79747.0,"due":"2026-04-29","overdue_in_sheet":"35"},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-04-16","ref":"VJIB/2627/023","amount":6606698.0,"due":"2026-07-15","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-04-17","ref":"VJIB/2627/026","amount":22494.0,"due":"2026-07-16","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-05-01","ref":"VJIB/2627/041","amount":803273.0,"due":"2026-07-30","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-05-19","ref":"VJIB/2627/065","amount":313060.0,"due":"2026-08-17","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-05-26","ref":"VJIB/2627/072","amount":113829.0,"due":"2026-08-24","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-05-28","ref":"VJIB/2627/078","amount":1493124.0,"due":"2026-08-26","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-06-01","ref":"VJIB/2627/087","amount":100611.0,"due":"2026-08-30","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-04-21","ref":"VJIB/2627/028","amount":91174.0,"due":"2026-06-20","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-04-28","ref":"VJIB/2627/037","amount":95877.0,"due":"2026-06-27","overdue_in_sheet":""},{"party":"Harsahaimal Shiamlal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-05-02","ref":"VJIB/2627/044","amount":146932.0,"due":"2026-07-01","overdue_in_sheet":""},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2025-12-31","ref":"VJIB/25-26/279","amount":22269413.0,"due":"2026-03-31","overdue_in_sheet":"64"},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-17","ref":"VJIB/25-26/304","amount":2989769.0,"due":"2026-04-17","overdue_in_sheet":"47"},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-20","ref":"VJIB/25-26/309","amount":680413.0,"due":"2026-04-20","overdue_in_sheet":"44"},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-22","ref":"VJIB/25-26/315","amount":1364989.0,"due":"2026-04-22","overdue_in_sheet":"42"},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-03-09","ref":"VJIB/25-26/383","amount":492737.0,"due":"2026-06-07","overdue_in_sheet":""},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-03-10","ref":"VJIB/25-26/384","amount":8835140.0,"due":"2026-06-08","overdue_in_sheet":""},{"party":"Hazoorilal Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-03-21","ref":"VJIB/25-26/395","amount":85043.0,"due":"2026-06-19","overdue_in_sheet":""},{"party":"Hazoorilal & Sons Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-20","ref":"VJIB/25-26/308","amount":13759653.0,"due":"2026-04-20","overdue_in_sheet":"44"},{"party":"Hazoorilal & Sons Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-01-29","ref":"VJIB/25-26/330","amount":148256.0,"due":"2026-04-29","overdue_in_sheet":"35"},{"party":"Hazoorilal & Sons Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-03-07","ref":"VJIB/25-26/381","amount":6024938.0,"due":"2026-06-05","overdue_in_sheet":""},{"party":"Hazoorilal & Sons Jewellers Pvt Ltd","rep":"Hansraj Kunteta","date":"2026-04-08","ref":"VJIB/2627/015","amount":5174.0,"due":"2026-07-07","overdue_in_sheet":""},{"party":"Jaisalmer Arts & Crafts","rep":"Shailendra Jain","date":"2026-01-05","ref":"VJIB/25-26/283","amount":2041261.0,"due":"2026-03-06","overdue_in_sheet":"89"},{"party":"Jaisalmer Arts & Crafts","rep":"Shailendra Jain","date":"2026-02-16","ref":"VJIB/25-26/358","amount":345366.0,"due":"2026-04-17","overdue_in_sheet":"47"},{"party":"Jugal Kishore the Jeweller","rep":"Shailendra Jain","date":"2025-12-24","ref":"VJIB/25-26/272","amount":762911.0,"due":"2026-02-22","overdue_in_sheet":"101"},{"party":"Lahore Jewellers","rep":"Shailendra Jain","date":"2026-04-22","ref":"VJIB/2627/029","amount":304792.0,"due":"2026-06-21","overdue_in_sheet":""},{"party":"Lahore Jewellers","rep":"Shailendra Jain","date":"2026-05-08","ref":"VJIB/2627/054","amount":548387.0,"due":"2026-07-07","overdue_in_sheet":""},{"party":"Lokit Kumar Jain","rep":"N/A","date":"2026-06-01","ref":"VJIB/2627/085","amount":266273.0,"due":"2026-07-31","overdue_in_sheet":""},{"party":"Madanlal Chhaganlal Jewellers","rep":"Hansraj Kunteta","date":"2026-05-13","ref":"VJIB/2627/059","amount":1392441.0,"due":"2026-07-12","overdue_in_sheet":""},{"party":"Madanlal Chhaganlal Jewellers","rep":"Hansraj Kunteta","date":"2026-05-21","ref":"VJIB/2627/068","amount":404096.0,"due":"2026-07-20","overdue_in_sheet":""},{"party":"Malabar Gold And Diamond FZCO ( Export)","rep":"N/A","date":"2026-03-13","ref":"VJIB/25-26/EX08","amount":4284900.0,"due":"2026-06-11","overdue_in_sheet":""},{"party":"Moti Gold And Diamonds LLP","rep":"Hansraj Kunteta","date":"2026-03-26","ref":"CSRRSB-23","amount":1746.0,"due":"2026-05-25","overdue_in_sheet":"9"},{"party":"M/s Karrat 22 Enterprises","rep":"N/A","date":"2025-09-01","ref":"VJIB/25-26/133","amount":4642417.0,"due":"2025-10-01","overdue_in_sheet":"245"},{"party":"M/s Karrat 22 Enterprises","rep":"N/A","date":"2025-09-23","ref":"VJIB/25-26/170","amount":655047.0,"due":"2025-10-23","overdue_in_sheet":"223"},{"party":"Neelkanth Gold and Diamonds Private Limited","rep":"Hansraj Kunteta","date":"2025-10-08","ref":"VJIB/25-26/190","amount":371817.0,"due":"2025-12-07","overdue_in_sheet":"178"},{"party":"Neelkanth Gold and Diamonds Private Limited","rep":"Hansraj Kunteta","date":"2026-03-04","ref":"VJIB/25-26/376","amount":59792.0,"due":"2026-05-03","overdue_in_sheet":"31"},{"party":"Neelkanth Jewellers Private Limited","rep":"Shailendra Jain","date":"2026-05-29","ref":"VJIB/2627/081","amount":762701.0,"due":"2026-07-28","overdue_in_sheet":""},{"party":"Nidhi Choudhary","rep":"N/A","date":"2026-05-01","ref":"VJIB/2627/040","amount":220264.0,"due":"2026-06-30","overdue_in_sheet":""},{"party":"OPS Jewells Pvt Ltd","rep":"Shailendra Jain","date":"2026-01-16","ref":"VJIB/25-26/298","amount":410391.0,"due":"2026-03-17","overdue_in_sheet":"78"},{"party":"OPS Jewells Pvt Ltd","rep":"Shailendra Jain","date":"2026-04-23","ref":"VJIB/2627/030","amount":1934209.0,"due":"2026-06-22","overdue_in_sheet":""},{"party":"OPS Jewells Pvt Ltd","rep":"Shailendra Jain","date":"2026-05-27","ref":"VJIB/2627/DN15","amount":9896.0,"due":"2026-07-26","overdue_in_sheet":""},{"party":"Panna Diamond World LLP","rep":"N/A","date":"2025-03-04","ref":"VJIB/24-25/272","amount":256244.0,"due":"2025-05-03","overdue_in_sheet":"396"},{"party":"Panna Diamond World LLP","rep":"N/A","date":"2025-11-12","ref":"VJIB/25-26/234","amount":608262.0,"due":"2026-01-11","overdue_in_sheet":"143"},{"party":"Panna Handicrafts","rep":"Shailendra Jain","date":"2025-12-04","ref":"VJIB/25-26/256","amount":4041866.0,"due":"2026-01-03","overdue_in_sheet":"151"},{"party":"P.C Chandra & Sons (India) Pvt Ltd BB","rep":"Hansraj Kunteta","date":"2026-05-21","ref":"VJIB/2627/067","amount":1995791.0,"due":"2026-07-20","overdue_in_sheet":""},{"party":"P N Gadgil Jewellers Limited","rep":"Hansraj Kunteta","date":"2025-05-24","ref":"VJIB/25-26/045","amount":12300.0,"due":"2025-08-22","overdue_in_sheet":"285"},{"party":"P N Gadgil Jewellers Limited","rep":"Hansraj Kunteta","date":"2025-11-10","ref":"VJIB/25-26/225","amount":323948.0,"due":"2026-02-08","overdue_in_sheet":"115"},{"party":"Pristine","rep":"N/A","date":"2025-10-07","ref":"VJIB/25-26/186","amount":179736.0,"due":"2025-12-06","overdue_in_sheet":"179"},{"party":"Pristine","rep":"N/A","date":"2025-12-29","ref":"VJIB/25-26/278","amount":371562.0,"due":"2026-02-27","overdue_in_sheet":"96"},{"party":"Pristine","rep":"N/A","date":"2026-01-12","ref":"VJIB/25-26/291","amount":42630.0,"due":"2026-03-13","overdue_in_sheet":"82"},{"party":"Pristine","rep":"N/A","date":"2026-03-12","ref":"VJIB/25-26/388","amount":236238.0,"due":"2026-05-11","overdue_in_sheet":"23"},{"party":"Punjab Jewels & Gems","rep":"Shailendra Jain","date":"2026-03-25","ref":"VJIB/25-26/401","amount":392121.0,"due":"2026-05-24","overdue_in_sheet":"10"},{"party":"Ranka Jewellers & Sons Private Limited","rep":"Hansraj Kunteta","date":"2025-10-15","ref":"VJIB/25-26/201","amount":5785037.0,"due":"2025-12-14","overdue_in_sheet":"171"},{"party":"Ranka Jewellers & Sons Private Limited","rep":"Hansraj Kunteta","date":"2026-01-06","ref":"VJIB/25-26/285","amount":449237.0,"due":"2026-03-07","overdue_in_sheet":"88"},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-04-14","ref":"VJIB/2627/022","amount":2466200.0,"due":"2026-07-13","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-04-17","ref":"VJIB/2627/024","amount":1044711.0,"due":"2026-07-16","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-04","ref":"VJIB/2627/047","amount":4247191.0,"due":"2026-08-02","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-05","ref":"VJIB/2627/050","amount":239290.0,"due":"2026-08-03","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-08","ref":"VJIB/2627/055","amount":49858.0,"due":"2026-08-06","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-12","ref":"VJIB/2627/058","amount":801504.0,"due":"2026-08-10","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-14","ref":"VJIB/2627/062","amount":230052.0,"due":"2026-08-12","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-25","ref":"VJIB/2627/069","amount":38665.0,"due":"2026-08-23","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-26","ref":"VJIB/2627/073","amount":47945.0,"due":"2026-08-24","overdue_in_sheet":""},{"party":"Rathod Jewellers","rep":"Hansraj Kunteta","date":"2026-05-29","ref":"VJIB/2627/080","amount":256754.0,"due":"2026-08-27","overdue_in_sheet":""},{"party":"Ratlam Abhushan Pvt.Ltd","rep":"Hansraj Kunteta","date":"2026-05-27","ref":"VJIB/2627/077","amount":168310.0,"due":"2026-07-26","overdue_in_sheet":""},{"party":"RCS Gem Co., Ltd ( Import )","rep":"N/A","date":"2026-05-30","ref":"234","amount":705600.0,"due":"2026-07-14","overdue_in_sheet":""},{"party":"Regal Jewellers LLP","rep":"N/A","date":"2025-04-12","ref":"VJIB/25-26/010","amount":50374.0,"due":"2025-05-27","overdue_in_sheet":"372"},{"party":"Regal Jewellers LLP","rep":"N/A","date":"2025-06-25","ref":"VJIB/25-26/074","amount":112448.0,"due":"2025-08-09","overdue_in_sheet":"298"},{"party":"Regal Jewellers LLP","rep":"N/A","date":"2025-08-05","ref":"VJIB/25-26/099","amount":101292.0,"due":"2025-09-19","overdue_in_sheet":"257"},{"party":"Regal Jewellers Llp Karnataka","rep":"N/A","date":"2025-11-14","ref":"VJIB/25-26/236","amount":14164.0,"due":"2025-12-29","overdue_in_sheet":"156"},{"party":"Regal Jewellers Pvt Ltd","rep":"N/A","date":"2026-03-19","ref":"VJIB/25-26/391","amount":63312.0,"due":"2026-05-03","overdue_in_sheet":"31"},{"party":"Rikhab Das Udai Chand","rep":"Hansraj Kunteta","date":"2026-04-24","ref":"VJIB/2627/033","amount":783775.0,"due":"2026-06-23","overdue_in_sheet":""},{"party":"Saloni Jain","rep":"N/A","date":"2026-04-02","ref":"VJIB/2627/002","amount":813700.0,"due":"2026-06-01","overdue_in_sheet":"2"},{"party":"Shop LC Global Inc ( Export )","rep":"N/A","date":"2024-08-02","ref":"VJIB/24-25/EX04","amount":237533.0,"due":"2024-10-01","overdue_in_sheet":"610"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-01-18","ref":"VJIB/24-25/228","amount":1560147.0,"due":"2025-01-25","overdue_in_sheet":"494"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-04-08","ref":"VJIB/25-26/005","amount":2951508.0,"due":"2025-05-08","overdue_in_sheet":"391"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-06-10","ref":"VJIB/25-26/061","amount":1871887.0,"due":"2025-07-10","overdue_in_sheet":"328"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-07-11","ref":"VJIB/25-26/085","amount":3838788.0,"due":"2025-08-10","overdue_in_sheet":"297"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-07-15","ref":"VJIB/25-26/089","amount":157193.0,"due":"2025-08-14","overdue_in_sheet":"293"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-08-20","ref":"VJIB/25-26/116","amount":1186505.0,"due":"2025-09-19","overdue_in_sheet":"257"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-08-23","ref":"VJIB/25-26/123","amount":2090458.0,"due":"2025-09-22","overdue_in_sheet":"254"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-08-30","ref":"VJIB/25-26/130","amount":18250859.0,"due":"2025-09-29","overdue_in_sheet":"247"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-09-03","ref":"VJIB/25-26/140","amount":1584188.0,"due":"2025-10-03","overdue_in_sheet":"243"},{"party":"Shri Krishna Jewellers Pvt Ltd ( B-Hills)","rep":"Hansraj Kunteta","date":"2025-10-29","ref":"VJIB/25-26/210","amount":1012918.0,"due":"2025-11-28","overdue_in_sheet":"187"},{"party":"Shri Ram Hari Ram Jewellers","rep":"Hansraj Kunteta","date":"2025-11-11","ref":"VJIB/25-26/230","amount":217170.0,"due":"2026-01-10","overdue_in_sheet":"144"},{"party":"Solitaire Diamond Boutique","rep":"Shailendra Jain","date":"2026-02-26","ref":"VJIB/25-26/374","amount":500000.0,"due":"2026-04-27","overdue_in_sheet":"37"},{"party":"Tarun Jethi A Luxury Jeweller","rep":"Shailendra Jain","date":"2025-08-19","ref":"VJIB/25-26/115","amount":435289.0,"due":"2025-10-18","overdue_in_sheet":"228"},{"party":"Tarun Jethi A Luxury Jeweller","rep":"Shailendra Jain","date":"2026-02-19","ref":"VJIB/25-26/365","amount":153637.0,"due":"2026-04-20","overdue_in_sheet":"44"},{"party":"Tarun Jethi A Luxury Jeweller","rep":"Shailendra Jain","date":"2026-03-28","ref":"VJIB/25-26/403","amount":291233.0,"due":"2026-05-27","overdue_in_sheet":"7"},{"party":"Valentine Jewellery (I) Pvt.Ltd.","rep":"N/A","date":"2026-05-30","ref":"VJIB/2627/083","amount":13991.0,"due":"2026-08-28","overdue_in_sheet":""},{"party":"Valentine Jewellery (I) Pvt.Ltd.","rep":"N/A","date":"2026-06-02","ref":"VJIB/2627/088","amount":43403.0,"due":"2026-08-31","overdue_in_sheet":""},{"party":"Verma Fine Jewels Pvt Ltd","rep":"Shailendra Jain","date":"2026-04-25","ref":"VJIB/2627/034","amount":716683.0,"due":"2026-06-24","overdue_in_sheet":""},{"party":"Vijay Jewellers","rep":"Shailendra Jain","date":"2026-01-24","ref":"VJIB/25-26/323","amount":995962.0,"due":"2026-03-25","overdue_in_sheet":"70"},{"party":"Vijay Jewellers","rep":"Shailendra Jain","date":"2026-02-14","ref":"VJIB/25-26/357","amount":136459.0,"due":"2026-04-15","overdue_in_sheet":"49"},{"party":"Vijay Jewellers","rep":"Shailendra Jain","date":"2026-05-27","ref":"VJIB/2627/074","amount":660908.0,"due":"2026-07-26","overdue_in_sheet":""},{"party":"Vijay Jewellers","rep":"Shailendra Jain","date":"2026-06-01","ref":"VJIB/2627/086","amount":178552.0,"due":"2026-07-31","overdue_in_sheet":""},{"party":"Vummidi Bangaru Jewellers (India) Private Limited","rep":"Hansraj Kunteta","date":"2026-05-02","ref":"VJIB/2627/046","amount":42000388.0,"due":"2026-07-01","overdue_in_sheet":""},{"party":"Vummidi Bangaru Jewellers (India) Private Limited","rep":"Hansraj Kunteta","date":"2026-05-30","ref":"VJIB/2627/082","amount":40513939.0,"due":"2026-07-29","overdue_in_sheet":""}];
+
+const STORAGE_KEY = 'vji_khata_bills_v1';
+const GITHUB_URL_KEY = 'vji_github_raw_url';
+const REMINDER_WINDOW_DAYS = 7; // show reminder once a bill is due within 7 days (or already overdue)
+
+/* ---------------- date helpers ---------------- */
+function todayMidnight(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+function parseISO(s){
+  if(!s) return null;
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function daysBetween(a,b){ // a,b are Date at midnight; positive if b is after a
+  return Math.round((b-a)/(1000*60*60*24));
+}
+function fmtDate(d){
+  if(!d) return '—';
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function fmtMoney(n){
+  if(n===null||n===undefined) return '—';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+function isMonday(d){ return d.getDay()===1; }
+
+/* ---------------- data load/save ---------------- */
+function loadBills(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return DEFAULT_BILLS;
+}
+function saveBills(bills){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(bills));
+}
+
+/* ---------------- GitHub fetch helper ---------------- */
+// Hardcoded repo URL — change this if your repo moves
+// Using GitHub API endpoint (not raw) to always bypass CDN cache
+const GITHUB_REPO_OWNER = 'prateek198501';
+const GITHUB_REPO_NAME  = 'vji-khata';
+const GITHUB_FILE_PATH  = 'bills.json';
+
+function saveGithubUrl(url){ localStorage.setItem(GITHUB_URL_KEY, url); }
+function loadGithubUrl(){
+  // Always return the hardcoded URL — ignore any old saved URL
+  return 'https://raw.githubusercontent.com/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/main/' + GITHUB_FILE_PATH;
+}
+
+async function fetchBillsFromGithub(){
+  // Use GitHub Contents API — always returns latest commit, no CDN caching
+  const apiUrl = 'https://api.github.com/repos/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/contents/' + GITHUB_FILE_PATH;
+  try {
+    const resp = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/vnd.github.v3.raw' }
+    });
+    if(!resp.ok) throw new Error('GitHub API HTTP ' + resp.status);
+    const data = await resp.json();
+    if(Array.isArray(data) && data.length > 0) return data;
+    throw new Error('empty or invalid data from API');
+  } catch(apiErr) {
+    // Fallback: raw URL with strong cache-bust
+    console.info('[VJI] API fetch failed, trying raw URL:', apiErr.message);
+    const rawUrl = 'https://raw.githubusercontent.com/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/main/' + GITHUB_FILE_PATH + '?nocache=' + Date.now();
+    const resp2 = await fetch(rawUrl, { cache: 'no-store' });
+    if(!resp2.ok) throw new Error('Raw URL HTTP ' + resp2.status);
+    const data2 = await resp2.json();
+    return Array.isArray(data2) ? data2 : null;
+  }
+}
+
+function downloadJsonFile(bills){
+  const blob = new Blob([JSON.stringify(bills, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bills.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+let BILLS = loadBills();
+
+/* ---------------- derive status for a bill ---------------- */
+function billStatus(b, today){
+  const due = parseISO(b.due);
+  if(!due) return {status:'unknown', overdueDays:0, dueInDays:null};
+  const diff = daysBetween(today, due); // due - today
+  if(diff < 0){
+    return {status:'overdue', overdueDays: -diff, dueInDays: diff};
+  } else if(diff <= REMINDER_WINDOW_DAYS){
+    return {status:'duesoon', overdueDays:0, dueInDays: diff};
+  } else {
+    return {status:'upcoming', overdueDays:0, dueInDays: diff};
+  }
+}
+
+/* ---------------- auth ---------------- */
+function buildCredentials(bills){
+  const reps = {};
+  bills.forEach(b=>{
+    if(b.rep && b.rep.trim() && b.rep.trim().toUpperCase()!=='N/A'){
+      reps[b.rep.trim()] = true;
+    }
+  });
+  const creds = {}; // username(lower) -> {pass, rep, label}
+  Object.keys(reps).forEach(rep=>{
+    const parts = rep.trim().split(/\s+/);
+    const first = parts[0];
+    const last = parts[parts.length-1];
+    creds[first.toLowerCase()] = {pass: last.toLowerCase(), rep: rep, label: first};
+  });
+  return creds;
+}
+const ADMIN_USER = 'admin', ADMIN_PASS = 'admin@123';
+
+let currentUser = null; // {rep: 'all'|repname, label}
+
+function isAdmin(){
+  return !!currentUser && currentUser.rep === 'all';
+}
+
+function attemptLogin(username, password){
+  const u = username.trim().toLowerCase();
+  const p = password.trim().toLowerCase();
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    return {rep:'all', label:'Admin'};
+  }
+  const creds = buildCredentials(BILLS);
+  const match = creds[u];
+  if(match && match.pass===p){
+    return {rep: match.rep, label: match.label};
+  }
+  return null;
+}
+
+/* ---------------- session persistence (per-tab, not localStorage to avoid leaking creds) ---------------- */
+function restoreSession(){
+  try{
+    const raw = sessionStorage.getItem('vji_session');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return null;
+}
+function saveSession(user){
+  sessionStorage.setItem('vji_session', JSON.stringify(user));
+}
+function clearSession(){
+  sessionStorage.removeItem('vji_session');
+}
+
+/* ---------------- rendering ---------------- */
+let activeFilter = 'all';
+let activeSort = 'overdue_desc';
+let searchTerm = '';
+let drFromDate = null; // Date object or null
+let drToDate   = null; // Date object or null
+
+function visibleBills(){
+  let bills;
+  if(currentUser.rep === 'all'){
+    // admin: filter by selected salesperson tab
+    if(activeSalesPerson === 'all'){
+      bills = BILLS;
+    } else {
+      bills = BILLS.filter(b => (b.rep||'').trim() === activeSalesPerson);
+    }
+  } else {
+    bills = BILLS.filter(b => (b.rep||'').trim() === currentUser.rep);
+  }
+  return bills;
+}
+
+function groupByParty(bills){
+  const map = new Map();
+  bills.forEach(b=>{
+    if(!map.has(b.party)) map.set(b.party, []);
+    map.get(b.party).push(b);
+  });
+  return map;
+}
+
+function initials(name){
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if(parts.length===1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0]+parts[1][0]).toUpperCase();
+}
+
+function renderTopbar(){
+  document.getElementById('welcomeName').textContent =
+    currentUser.rep==='all' ? 'Welcome, Admin' : `Welcome, ${currentUser.label}`;
+  const today = todayMidnight();
+  const dayName = today.toLocaleDateString('en-GB',{weekday:'long'});
+  document.getElementById('todayLine').textContent =
+    `${dayName}, ${fmtDate(today)}${isMonday(today)?' · Monday review':''}`;
+  document.getElementById('importBtn').style.display = isAdmin() ? 'flex' : 'none';
+  document.getElementById('syncBtn').style.display = 'flex'; // all users can fetch latest
+}
+
+function renderReminderBanner(){
+  const today = todayMidnight();
+  const mine = visibleBills();
+  let dueSoon = [], overdue = [];
+  mine.forEach(b=>{
+    const s = billStatus(b, today);
+    if(s.status==='overdue') overdue.push({...b, ...s});
+    else if(s.status==='duesoon') dueSoon.push({...b, ...s});
+  });
+  const banner = document.getElementById('reminderBanner');
+  const monday = isMonday(today);
+  const total = overdue.length + dueSoon.length;
+
+  if(total===0){
+    banner.className = 'reminder-banner is-clear';
+    banner.innerHTML = `
+      <div class="reminder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <div class="reminder-text">
+        <h3>All clear for now</h3>
+        <p>No bills are overdue or due within the next ${REMINDER_WINDOW_DAYS} days${currentUser.rep!=='all' ? ' on your accounts' : ''}.</p>
+      </div>`;
+    return;
+  }
+
+  banner.className = 'reminder-banner';
+  const mondayNote = monday
+    ? `This is your <b>Monday follow-up reminder</b> — `
+    : `Heads up — `;
+  banner.innerHTML = `
+    <div class="reminder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg></div>
+    <div class="reminder-text">
+      <h3>${monday ? "Monday Collection Reminder" : "Follow-up reminder"}</h3>
+      <p>${mondayNote}<span class="count">${overdue.length}</span> bill${overdue.length!==1?'s':''} overdue and
+      <span class="count">${dueSoon.length}</span> due within ${REMINDER_WINDOW_DAYS} days
+      ${currentUser.rep!=='all' ? 'across your accounts' : 'across all accounts'}. Worth a call today.</p>
+    </div>`;
+}
+
+function renderStats(){
+  const today = todayMidnight();
+  const mine = visibleBills();
+  let overdueAmt=0, overdueCount=0, dueSoonAmt=0, dueSoonCount=0, totalAmt=0;
+  mine.forEach(b=>{
+    const s = billStatus(b, today);
+    totalAmt += b.amount;
+    if(s.status==='overdue'){ overdueAmt+=b.amount; overdueCount++; }
+    if(s.status==='duesoon'){ dueSoonAmt+=b.amount; dueSoonCount++; }
+  });
+  const partyCount = new Set(mine.map(b=>b.party)).size;
+
+  const row = document.getElementById('statsRow');
+  row.innerHTML = `
+    <div class="stat-card">
+      <div class="label">Total Pending</div>
+      <div class="value numeric">${fmtMoney(totalAmt)}</div>
+    </div>
+    <div class="stat-card alert">
+      <div class="label">Overdue (${overdueCount})</div>
+      <div class="value numeric">${fmtMoney(overdueAmt)}</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="label">Due in ${REMINDER_WINDOW_DAYS} days (${dueSoonCount})</div>
+      <div class="value numeric">${fmtMoney(dueSoonAmt)}</div>
+    </div>
+    <div class="stat-card ok">
+      <div class="label">Accounts</div>
+      <div class="value numeric">${partyCount}</div>
+    </div>`;
+}
+
+function renderFilterPills(){
+  const today = todayMidnight();
+  const mine = visibleBills();
+  const counts = {all: mine.length, overdue:0, duesoon:0, upcoming:0};
+  mine.forEach(b=>{
+    const s = billStatus(b, today).status;
+    if(counts[s]!==undefined) counts[s]++;
+  });
+  const labels = {all:'All', overdue:'Overdue', duesoon:`Due in ${REMINDER_WINDOW_DAYS} days`, upcoming:'Upcoming'};
+  document.querySelectorAll('.pill').forEach(p=>{
+    const f = p.dataset.filter;
+    p.innerHTML = `${labels[f]} <span class="pill-count">${counts[f]}</span>`;
+  });
+}
+
+
+/* ---- salesperson filter & overdue slider state ---- */
+let activeSalesPerson = 'all';   // 'all' | rep-name string
+let overdueMinDays    = 0;       // 0 = no minimum (show all overdue)
+
+/* ---- build unique reps list for admin tabs ---- */
+function getRepsList(){
+  const reps = new Set();
+  BILLS.forEach(b => {
+    const r = (b.rep||'').trim();
+    if(r && r.toUpperCase()!=='N/A') reps.add(r);
+  });
+  return ['all', ...Array.from(reps).sort()];
+}
+
+/* ---- Render salesperson tabs (admin only) ---- */
+function renderSpTabs(){
+  const wrap = document.getElementById('spTabs');
+  if(!isAdmin()){ wrap.style.display='none'; return; }
+  wrap.style.display='flex';
+  document.getElementById('sliderWrap').style.display = 'block';
+
+  const reps = getRepsList();
+  const today = todayMidnight();
+
+  // Count overdue bills per rep
+  const counts = {};
+  BILLS.forEach(b => {
+    const r = (b.rep||'N/A').trim();
+    const key = (r.toUpperCase()==='N/A') ? 'Unassigned' : r;
+    const s = billStatus(b, today);
+    if(!counts[key]) counts[key]={'total':0,'overdue':0};
+    counts[key].total++;
+    if(s.status==='overdue') counts[key].overdue++;
+  });
+
+  const totalBills = BILLS.length;
+  const totalOverdue = BILLS.filter(b=>billStatus(b,today).status==='overdue').length;
+
+  wrap.innerHTML = '<span class="sp-tabs-label">Sales Person</span>';
+  reps.forEach(rep => {
+    const btn = document.createElement('button');
+    btn.className = 'sp-tab' + (rep===activeSalesPerson?' active':'');
+    const label = rep==='all' ? 'All' : rep;
+    const cnt = rep==='all' ? totalBills : (counts[rep]||counts['Unassigned']||{total:0}).total;
+    const od  = rep==='all' ? totalOverdue : (counts[rep]||counts['Unassigned']||{overdue:0}).overdue;
+    btn.innerHTML = `${label}<span class="sp-count">${cnt}${od>0?' · <span style="color:#f87171">'+od+' OD</span>':''}</span>`;
+    btn.onclick = () => {
+      activeSalesPerson = rep;
+      renderSpTabs();
+      renderAll();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+/* ---- Slider update ---- */
+function updateSlider(val){
+  overdueMinDays = parseInt(val, 10);
+  const slider = document.getElementById('overdueSlider');
+  const pct = (overdueMinDays / 1000) * 100;
+  slider.style.setProperty('--pct', pct + '%');
+  const label = document.getElementById('sliderLabel');
+  if(overdueMinDays === 0){
+    label.textContent = 'Show all overdue bills';
+  } else {
+    label.textContent = 'Overdue ≥ ' + overdueMinDays + ' day' + (overdueMinDays!==1?'s':'');
+  }
+}
+
+function filteredSortedBills(){
+  const today = todayMidnight();
+  let mine = visibleBills().map(b => ({...b, ...billStatus(b, today)}));
+
+  if(activeFilter !== 'all'){
+    mine = mine.filter(b => b.status === activeFilter);
+  }
+  // overdue slider: only keep overdue bills that are overdue >= overdueMinDays
+  if(overdueMinDays > 0){
+    mine = mine.filter(b => b.status !== 'overdue' || b.overdueDays >= overdueMinDays);
+  }
+  if(searchTerm.trim()){
+    const t = searchTerm.trim().toLowerCase();
+    mine = mine.filter(b => b.party.toLowerCase().includes(t) || (b.ref||'').toLowerCase().includes(t));
+  }
+  // date range filter on invoice date
+  if(drFromDate){
+    mine = mine.filter(b => { const d = parseISO(b.date); return d && d >= drFromDate; });
+  }
+  if(drToDate){
+    // include the whole "to" day
+    const toEnd = new Date(drToDate); toEnd.setHours(23,59,59,999);
+    mine = mine.filter(b => { const d = parseISO(b.date); return d && d <= toEnd; });
+  }
+
+  switch(activeSort){
+    case 'overdue_desc':
+      mine.sort((a,b)=> b.overdueDays - a.overdueDays || (a.dueInDays - b.dueInDays));
+      break;
+    case 'amount_desc':
+      mine.sort((a,b)=> b.amount - a.amount);
+      break;
+    case 'due_asc':
+      mine.sort((a,b)=> parseISO(a.due) - parseISO(b.due));
+      break;
+    case 'name_asc':
+      mine.sort((a,b)=> a.party.localeCompare(b.party));
+      break;
+    case 'salesperson_asc':
+      mine.sort((a,b)=> {
+        const ra = (a.rep||'N/A').trim(), rb = (b.rep||'N/A').trim();
+        return ra.localeCompare(rb) || a.party.localeCompare(b.party);
+      });
+      break;
+  }
+  return mine;
+}
+
+function renderGroups(){
+  const bills = filteredSortedBills();
+  const container = document.getElementById('groupsContainer');
+  const sub = document.getElementById('sectionSub');
+  sub.textContent = `${bills.length} bill${bills.length!==1?'s':''} across ${new Set(bills.map(b=>b.party)).size} account${new Set(bills.map(b=>b.party)).size!==1?'s':''}`;
+  // update date range summary strip
+  const hasDr = drFromDate || drToDate;
+  const summary = document.getElementById('drSummary');
+  if(hasDr && summary){
+    const today = todayMidnight();
+    const drBills = bills; // already filtered
+    const totalAmt = drBills.reduce((s,b)=>s+b.amount,0);
+    const overdueCt = drBills.filter(b=>{ const s=billStatus(b,today); return s.status==='overdue'; }).length;
+    document.getElementById('drCount').textContent = drBills.length;
+    document.getElementById('drParties').textContent = new Set(drBills.map(b=>b.party)).size;
+    document.getElementById('drTotal').textContent = fmtMoney(totalAmt);
+    document.getElementById('drOverdue').textContent = overdueCt;
+    summary.classList.add('visible');
+  } else if(summary){
+    summary.classList.remove('visible');
+  }
+
+  if(bills.length===0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <h3>No matching bills</h3>
+        <p>Try a different search term or filter.</p>
+      </div>`;
+    return;
+  }
+
+  // group while preserving the sort order of first appearance
+  const order = [];
+  const groups = new Map();
+  bills.forEach(b=>{
+    if(!groups.has(b.party)){ groups.set(b.party, []); order.push(b.party); }
+    groups.get(b.party).push(b);
+  });
+
+  // when sorting by amount/overdue, order groups by their lead bill metric; default keep order array
+  if(activeSort==='name_asc') order.sort((a,b)=>a.localeCompare(b));
+
+  container.innerHTML = order.map(party=>{
+    const rows = groups.get(party);
+    const totalAmt = rows.reduce((s,r)=>s+r.amount,0);
+    const overdueCt = rows.filter(r=>r.status==='overdue').length;
+    const dueSoonCt = rows.filter(r=>r.status==='duesoon').length;
+    const rep = rows[0].rep && rows[0].rep.trim().toUpperCase()!=='N/A' ? rows[0].rep : 'Unassigned';
+
+    const badges = `
+      ${overdueCt>0 ? `<span class="badge overdue">${overdueCt} overdue</span>` : ''}
+      ${dueSoonCt>0 ? `<span class="badge duesoon">${dueSoonCt} due soon</span>` : ''}
+    `;
+
+    const tableRows = rows.map(r=>`
+      <tr>
+        <td>${r.ref}</td>
+        <td class="numeric">${fmtDate(parseISO(r.date))}</td>
+        <td class="numeric">${fmtDate(parseISO(r.due))}</td>
+        <td>${statusChip(r)}</td>
+        <td class="amt-cell numeric">${fmtMoney(r.amount)}</td>
+      </tr>`).join('');
+
+    const cardRows = rows.map(r=>`
+      <div class="bill-card">
+        <div class="bill-card-row">
+          <span class="ref">${r.ref}</span>
+          <span class="amt numeric">${fmtMoney(r.amount)}</span>
+        </div>
+        <div class="meta-line"><span>Due ${fmtDate(parseISO(r.due))}</span>${statusChip(r)}</div>
+      </div>`).join('');
+
+    return `
+      <div class="party-group" data-party="${escapeAttr(party)}">
+        <div class="party-head" onclick="toggleGroup(this)">
+          <div class="party-head-left">
+            <div class="party-avatar">${initials(party)}</div>
+            <div class="party-info">
+              <div class="party-name">${party}</div>
+              <div class="party-meta">${rows.length} bill${rows.length!==1?'s':''} &middot; <span style="font-weight:600;color:var(--teal)">${rep}</span></div>
+            </div>
+          </div>
+          <div class="party-head-right">
+            <div class="party-badges">${badges}</div>
+            <div class="party-total">
+              <div class="amt numeric">${fmtMoney(totalAmt)}</div>
+              <div class="lbl">total pending</div>
+            </div>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="bills-table">
+          <table>
+            <thead><tr><th>Ref. No.</th><th>Invoice Date</th><th>Due Date</th><th>Status</th><th style="text-align:right">Amount</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+        <div class="bill-cards">${cardRows}</div>
+      </div>`;
+  }).join('');
+}
+
+function statusChip(r){
+  if(r.status==='overdue'){
+    return `<span class="status-chip overdue"><span class="dot"></span>${r.overdueDays} day${r.overdueDays!==1?'s':''} overdue</span>`;
+  }
+  if(r.status==='duesoon'){
+    return `<span class="status-chip duesoon"><span class="dot"></span>Due in ${r.dueInDays} day${r.dueInDays!==1?'s':''}</span>`;
+  }
+  return `<span class="status-chip upcoming"><span class="dot"></span>Due in ${r.dueInDays} days</span>`;
+}
+
+function escapeAttr(s){ return s.replace(/"/g,'&quot;'); }
+
+window.toggleGroup = function(headEl){
+  const group = headEl.closest('.party-group');
+  group.classList.toggle('open');
+};
+
+/* =====================================================================
+   CALENDAR VIEW
+   - Shows a monthly grid of all bills due that month.
+   - Each bill also gets follow-up reminder markers counting back from
+     its due date every REMINDER_WINDOW_DAYS (currently 7 days), so a
+     rep gets a prompt to check in roughly once a week as a due date nears.
+   ===================================================================== */
+let calViewMonth = null; // Date, first-of-month, set on first render
+let calSelectedDateKey = null;
+const CAL_REMINDER_STEPS = 4; // how many check-ins back from the due date (4 × 7 = 28 days out)
+
+function dateKey(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Build reminder check-in dates for a bill: every REMINDER_WINDOW_DAYS counting back
+// from the due date, down to (and including) the due date itself.
+function reminderDatesForBill(due){
+  const dates = [];
+  for(let i=CAL_REMINDER_STEPS-1;i>=0;i--){
+    const d = new Date(due);
+    d.setDate(d.getDate() - i*REMINDER_WINDOW_DAYS);
+    dates.push(dateKey(d));
+  }
+  return dates; // [T-(3×window), T-(2×window), T-window, T-0]
+}
+
+// Index bills by calendar day for the currently visible user.
+// Returns Map<dateKey, {due:[bills], reminders:[{bill, stage}]}>
+function buildCalendarIndex(){
+  const today = todayMidnight();
+  const mine = visibleBills();
+  const index = new Map();
+
+  function ensure(key){
+    if(!index.has(key)) index.set(key, {due:[], reminders:[]});
+    return index.get(key);
+  }
+
+  mine.forEach(b=>{
+    const due = parseISO(b.due);
+    if(!due) return;
+    const status = billStatus(b, today);
+    ensure(dateKey(due)).due.push({...b, ...status});
+
+    const stages = [];
+    for(let i=CAL_REMINDER_STEPS-1;i>=1;i--) stages.push(`${i*REMINDER_WINDOW_DAYS} days out`);
+    stages.push('Due today');
+
+    reminderDatesForBill(due).forEach((key, idx)=>{
+      // don't double up the due-date marker with the due list itself
+      if(idx===CAL_REMINDER_STEPS-1) return;
+      ensure(key).reminders.push({...b, ...status, stage: stages[idx]});
+    });
+  });
+
+  return index;
+}
+
+function renderCalendar(){
+  if(!calViewMonth){
+    const t = todayMidnight();
+    calViewMonth = new Date(t.getFullYear(), t.getMonth(), 1);
+  }
+  const index = buildCalendarIndex();
+  const today = todayMidnight();
+  const y = calViewMonth.getFullYear(), m = calViewMonth.getMonth();
+
+  document.getElementById('calMonthLabel').textContent =
+    calViewMonth.toLocaleDateString('en-GB',{month:'long', year:'numeric'});
+
+  // Monday-first grid
+  const firstOfMonth = new Date(y, m, 1);
+  const startOffset = (firstOfMonth.getDay()+6)%7; // 0=Mon
+  const gridStart = new Date(y, m, 1 - startOffset);
+  const daysInGrid = 42; // 6 weeks always, keeps layout stable
+
+  let totalDueThisMonth = 0, totalReminderTouches = 0;
+
+  const cells = [];
+  for(let i=0;i<daysInGrid;i++){
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate()+i);
+    const key = dateKey(d);
+    const entry = index.get(key) || {due:[], reminders:[]};
+    const outside = d.getMonth()!==m;
+    const isToday = dateKey(d)===dateKey(today);
+    const monday = isMonday(d);
+
+    if(!outside){
+      totalDueThisMonth += entry.due.length;
+      totalReminderTouches += entry.reminders.length;
+    }
+
+    const statusCounts = {overdue:0,duesoon:0,upcoming:0};
+    entry.due.forEach(b=>{ if(statusCounts[b.status]!==undefined) statusCounts[b.status]++; });
+    const hasReminder = entry.reminders.length>0;
+
+    const dots = [];
+    if(statusCounts.overdue>0) dots.push('<span class="cal-dot overdue"></span>');
+    if(statusCounts.duesoon>0) dots.push('<span class="cal-dot duesoon"></span>');
+    if(statusCounts.upcoming>0) dots.push('<span class="cal-dot upcoming"></span>');
+    if(hasReminder) dots.push('<span class="cal-dot reminder"></span>');
+
+    const dueTotal = entry.due.reduce((s,b)=>s+b.amount,0);
+
+    cells.push(`
+      <div class="cal-cell ${outside?'outside':''} ${isToday?'is-today':''} ${monday?'is-monday':''} ${calSelectedDateKey===key?'selected':''}"
+           data-date="${key}" onclick="selectCalendarDay('${key}')">
+        <div class="cal-daynum">${d.getDate()}</div>
+        ${monday && !outside ? '<div class="cal-monday-tag">Mon</div>' : ''}
+        ${dots.length ? `<div class="cal-dots">${dots.join('')}</div>` : ''}
+        ${dueTotal>0 ? `<div class="cal-amt-tag">${fmtMoney(dueTotal)}</div>` : ''}
+      </div>`);
+  }
+
+  document.getElementById('calGrid').innerHTML = cells.join('');
+  document.getElementById('calendarSub').textContent =
+    `${totalDueThisMonth} bill${totalDueThisMonth!==1?'s':''} due this month · ${totalReminderTouches} 7-day follow-up${totalReminderTouches!==1?'s':''} scheduled`;
+
+  renderCalendarDayDetail(index);
+}
+
+function renderCalendarDayDetail(index){
+  const panel = document.getElementById('calDayDetail');
+  if(!calSelectedDateKey){
+    panel.innerHTML = `<div class="ddp-empty">Tap a day on the calendar to see bills due, and any 7-day follow-ups scheduled for that date.</div>`;
+    return;
+  }
+  const entry = index.get(calSelectedDateKey) || {due:[], reminders:[]};
+  const d = parseISO(calSelectedDateKey);
+  const niceDate = fmtDate(d);
+
+  if(entry.due.length===0 && entry.reminders.length===0){
+    panel.innerHTML = `
+      <div class="ddp-empty">Nothing due and no follow-ups scheduled on ${niceDate}.</div>`;
+    return;
+  }
+
+  const dueRows = entry.due.map(b=>`
+    <div class="ddp-row" style="flex-direction:column;align-items:stretch;gap:6px;padding:12px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div class="ddp-row-left" style="min-width:0;">
+          <div class="ddp-party">${b.party}</div>
+          <div class="ddp-ref" style="margin-top:2px;">
+            📄 ${b.ref}
+            ${b.rep && b.rep!=='N/A' ? `· 👤 ${b.rep}` : ''}
+          </div>
+        </div>
+        <div class="ddp-row-right" style="flex:none;text-align:right;">
+          <div class="ddp-amt">${fmtMoney(b.amount)}</div>
+          ${statusChip(b)}
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:11.5px;color:var(--ink-soft);flex-wrap:wrap;padding-top:2px;">
+        <span>🗓 Invoice: ${fmtDate(parseISO(b.date))}</span>
+        <span>⏰ Due: ${fmtDate(parseISO(b.due))}</span>
+        ${b.status==='overdue' ? `<span style="color:var(--rose);font-weight:600;">⚠ ${b.overdueDays} day${b.overdueDays!==1?'s':''} overdue</span>` : ''}
+      </div>
+    </div>`).join('');
+
+  const reminderRows = entry.reminders.map(b=>`
+    <div class="ddp-row" style="flex-direction:column;align-items:stretch;gap:6px;padding:12px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div class="ddp-row-left" style="min-width:0;">
+          <div class="ddp-party">${b.party}</div>
+          <div class="ddp-ref">📄 ${b.ref}${b.rep && b.rep!=='N/A' ? ` · 👤 ${b.rep}` : ''}</div>
+        </div>
+        <div class="ddp-row-right" style="flex:none;text-align:right;">
+          <div class="ddp-amt">${fmtMoney(b.amount)}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:11.5px;color:var(--ink-soft);flex-wrap:wrap;padding-top:2px;">
+        <span>🗓 Invoice: ${fmtDate(parseISO(b.date))}</span>
+        <span>⏰ Actual due: ${fmtDate(parseISO(b.due))}</span>
+        <span style="color:var(--teal);font-weight:600;">🔔 Follow-up: ${b.stage}</span>
+      </div>
+    </div>`).join('');
+
+  panel.innerHTML = `
+    <div class="ddp-card">
+      <div class="ddp-head">
+        <h3>${niceDate}</h3>
+        <div class="ddp-date">${entry.due.length} due &middot; ${entry.reminders.length} follow-up${entry.reminders.length!==1?'s':''}</div>
+      </div>
+      ${entry.due.length ? `<div class="ddp-section-label">Bills due</div>${dueRows}` : ''}
+      ${entry.reminders.length ? `<div class="ddp-section-label">7-day follow-up reminders</div>${reminderRows}` : ''}
+    </div>`;
+}
+
+window.selectCalendarDay = function(key){
+  calSelectedDateKey = (calSelectedDateKey===key) ? null : key;
+  renderCalendar();
+};
+
+function switchView(view){
+  const isCal = view==='calendar';
+  document.getElementById('listView').style.display = isCal ? 'none' : 'block';
+  document.getElementById('calendarView').style.display = isCal ? 'block' : 'none';
+  document.querySelectorAll('.view-tab').forEach(t=>t.classList.toggle('active', t.dataset.view===view));
+  if(isCal) renderCalendar();
+}
+
+function renderAll(){
+  renderTopbar();
+  renderSpTabs();
+  renderReminderBanner();
+  renderStats();
+  renderFilterPills();
+  renderGroups();
+  if(document.getElementById('calendarView').style.display !== 'none'){
+    renderCalendar();
+  }
+}
+
+/* ---------------- event wiring ---------------- */
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  const result = attemptLogin(u,p);
+  const errBox = document.getElementById('loginError');
+  if(result){
+    currentUser = result;
+    saveSession(result);
+    errBox.style.display='none';
+    showApp();
+  } else {
+    errBox.style.display='block';
+  }
+});
+
+document.getElementById('overdueSlider').addEventListener('input', function(){
+  updateSlider(this.value);
+  renderGroups();
+  if(document.getElementById('calendarView').style.display !== 'none') renderCalendar();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  clearSession();
+  currentUser = null;
+  activeSalesPerson = 'all';
+  overdueMinDays = 0;
+  updateSlider(0);
+  document.getElementById('spTabs').style.display='none';
+  document.getElementById('sliderWrap').style.display='none';
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('username').value='';
+  document.getElementById('password').value='';
+});
+
+document.getElementById('searchInput').addEventListener('input', function(e){
+  searchTerm = e.target.value;
+  renderGroups();
+});
+
+// Date range wiring
+document.getElementById('drFrom').addEventListener('change', function(){
+  drFromDate = this.value ? new Date(this.value + 'T00:00:00') : null;
+  renderGroups();
+  if(document.getElementById('calendarView').style.display !== 'none') renderCalendar();
+});
+document.getElementById('drTo').addEventListener('change', function(){
+  drToDate = this.value ? new Date(this.value + 'T00:00:00') : null;
+  renderGroups();
+  if(document.getElementById('calendarView').style.display !== 'none') renderCalendar();
+});
+document.getElementById('drClear').addEventListener('click', function(){
+  drFromDate = null; drToDate = null;
+  document.getElementById('drFrom').value = '';
+  document.getElementById('drTo').value = '';
+  renderGroups();
+  if(document.getElementById('calendarView').style.display !== 'none') renderCalendar();
+});
+document.getElementById('sortSelect').addEventListener('change', function(e){
+  activeSort = e.target.value;
+  renderGroups();
+});
+document.getElementById('filterPills').addEventListener('click', function(e){
+  const pill = e.target.closest('.pill');
+  if(!pill) return;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.filter;
+  renderGroups();
+});
+
+document.getElementById('viewTabs').addEventListener('click', function(e){
+  const tab = e.target.closest('.view-tab');
+  if(!tab) return;
+  switchView(tab.dataset.view);
+});
+document.getElementById('calPrev').addEventListener('click', ()=>{
+  calViewMonth = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth()-1, 1);
+  renderCalendar();
+});
+document.getElementById('calNext').addEventListener('click', ()=>{
+  calViewMonth = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth()+1, 1);
+  renderCalendar();
+});
+document.getElementById('calToday').addEventListener('click', ()=>{
+  const t = todayMidnight();
+  calViewMonth = new Date(t.getFullYear(), t.getMonth(), 1);
+  calSelectedDateKey = dateKey(t);
+  renderCalendar();
+});
+
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  renderAll();
+}
+
+/* ---------------- Excel import ---------------- */
+const importModal = document.getElementById('importModal');
+const fileInput = document.getElementById('fileInput');
+const dropZone = document.getElementById('dropZone');
+const confirmBtn = document.getElementById('confirmImport');
+const importStatus = document.getElementById('importStatus');
+let pendingParsed = null;
+
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  if(!isAdmin()) return; // sales rep accounts can never trigger data replacement
+  importModal.classList.add('show');
+  pendingParsed = null;
+  confirmBtn.disabled = true;
+  importStatus.textContent='';
+  importStatus.className='import-status';
+});
+
+/* ---------------- Export / GitHub sync modal wiring ---------------- */
+const syncModal = document.getElementById('syncModal');
+
+document.getElementById('syncBtn').addEventListener('click', ()=>{
+  syncModal.classList.add('show');
+  // Show/hide admin-only import steps based on role
+  const adminOnlySteps = document.getElementById('adminOnlySteps');
+  if(adminOnlySteps) adminOnlySteps.style.display = isAdmin() ? 'block' : 'none';
+  // Reset file state
+  syncPendingParsed = null;
+  document.getElementById('syncReadStatus').textContent = '';
+  document.getElementById('syncReadStatus').className = 'import-status';
+  document.getElementById('downloadJsonBtn').disabled = true;
+});
+
+document.getElementById('cancelSync').addEventListener('click', ()=>{
+  syncModal.classList.remove('show');
+});
+
+/* Save GitHub URL */
+document.getElementById('saveGithubUrlBtn').addEventListener('click', ()=>{
+  const st = document.getElementById('githubUrlStatus');
+  // The URL is hardcoded in the app — just show confirmation and trigger a manual refresh
+  st.textContent = '✓ URL is set. Click below to fetch latest data now.';
+  st.className = 'import-status ok';
+  fetchBillsFromGithub().then(bills=>{
+    if(bills && bills.length > 0){
+      BILLS = bills;
+      saveBills(BILLS);
+      renderAll();
+      st.textContent = '✓ Fetched ' + bills.length + ' bills from GitHub successfully!';
+      st.className = 'import-status ok';
+    }
+  }).catch(e=>{
+    st.textContent = 'Fetch failed: ' + e.message + '. Make sure bills.json is uploaded to your GitHub repo.';
+    st.className = 'import-status err';
+  });
+});
+
+/* File drop zone inside export modal */
+let syncPendingParsed = null;
+const syncDropZone = document.getElementById('syncDropZone');
+const syncFileInput = document.getElementById('syncFileInput');
+
+syncDropZone.addEventListener('click', ()=> syncFileInput.click());
+syncDropZone.addEventListener('dragover', e=>{ e.preventDefault(); syncDropZone.classList.add('drag'); });
+syncDropZone.addEventListener('dragleave', ()=> syncDropZone.classList.remove('drag'));
+syncDropZone.addEventListener('drop', e=>{
+  e.preventDefault(); syncDropZone.classList.remove('drag');
+  if(e.dataTransfer.files.length) handleSyncFile(e.dataTransfer.files[0]);
+});
+syncFileInput.addEventListener('change', e=>{ if(e.target.files.length) handleSyncFile(e.target.files[0]); });
+
+/* ── Parse VJI Bills Receivable sheet ──────────────────────────────────────
+   Column layout (0-based):
+     0=Date  1=Ref.No  2=Party Name (header rows) or blank (bill rows)
+     3=Sales Person    4=Pending Amount   5=Due Date   6=Overdue days
+   Party header row:  col0 empty, col2 has party name, col4 empty
+   Bill row:          col0 has date, col1 has ref no, col4 has amount
+   Subtotal row:      col0 empty, col1 empty/blank, col4 has total
+   ───────────────────────────────────────────────────────────────────── */
+function parseBillsSheet(rows){
+  const out = [];
+  let currentParty = null, currentRep = 'N/A';
+
+  function toISO(v){
+    if(!v && v !== 0) return null;
+    if(v instanceof Date){
+      if(isNaN(v)) return null;
+      const y = v.getFullYear(), m = v.getMonth()+1, d = v.getDate();
+      return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    }
+    if(typeof v === 'number'){
+      try{
+        const parsed = XLSX.SSF.parse_date_code(v);
+        if(parsed) return parsed.y+'-'+String(parsed.m).padStart(2,'0')+'-'+String(parsed.d).padStart(2,'0');
+      }catch(e){}
+    }
+    if(typeof v === 'string'){
+      const s = v.trim();
+      if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+      // DD/MM/YYYY or DD-MM-YYYY
+      const m2 = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if(m2) return m2[3]+'-'+m2[2].padStart(2,'0')+'-'+m2[1].padStart(2,'0');
+    }
+    return null;
+  }
+
+  function str(v){ return (v === null || v === undefined) ? '' : String(v).trim(); }
+
+  for(const r of rows){
+    const col0 = r[0], col1 = r[1], col2 = r[2], col3 = r[3], col4 = r[4], col5 = r[5];
+    const s0 = str(col0), s1 = str(col1), s2 = str(col2);
+
+    // Skip header / title rows (no date in col0, no ref in col1, col2 has text but looks like title)
+    if(!col0 && s2 && col4 === null || col4 === undefined){
+      // Could be party header: col0 empty, col2 has party name, col4 null/undefined
+      if(/party'?s\s*name/i.test(s2)) continue; // skip column label row
+      if(s2.length > 0){
+        currentParty = s2;
+        currentRep = str(col3) || 'N/A';
+      }
+      continue;
+    }
+
+    // Subtotal row: col0 empty, col1 empty/blank, col4 is a number
+    if(!col0 && s1 === '' && typeof col4 === 'number') continue;
+
+    // Bill row: col0 has a date, col1 has ref no
+    const dateISO = toISO(col0);
+    const refStr = s1;
+    if(dateISO && refStr && refStr !== '' && currentParty){
+      const dueISO = toISO(col5);
+      out.push({
+        party: currentParty,
+        rep: currentRep,
+        date: dateISO,
+        ref: refStr,
+        amount: typeof col4 === 'number' ? col4 : parseFloat(col4)||0,
+        due: dueISO
+      });
+    }
+  }
+  return out;
+}
+
+function handleSyncFile(file){
+  const st = document.getElementById('syncReadStatus');
+  st.textContent = 'Reading file…'; st.className = 'import-status';
+  document.getElementById('downloadJsonBtn').disabled = true;
+  syncPendingParsed = null;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try{
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, {type:'array', cellDates:true});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:null});
+      const parsed = parseBillsSheet(rows);
+      if(parsed.length === 0){
+        st.textContent = 'No bill rows found. Check the file format.';
+        st.className = 'import-status err';
+        return;
+      }
+      syncPendingParsed = parsed;
+      BILLS = parsed;
+      saveBills(BILLS);
+      renderAll();
+      st.textContent = '✓ Read ' + parsed.length + ' bills. Now click Download bills.json below.';
+      st.className = 'import-status ok';
+      document.getElementById('downloadJsonBtn').disabled = false;
+    }catch(e){
+      st.textContent = 'Could not read file: ' + e.message;
+      st.className = 'import-status err';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* Download JSON button */
+document.getElementById('downloadJsonBtn').addEventListener('click', ()=>{
+  if(!syncPendingParsed) return;
+  downloadJsonFile(syncPendingParsed);
+});
+
+/* ---------------- boot ---------------- */
+(function boot(){
+  const session = restoreSession();
+  if(session){
+    currentUser = session;
+    showApp(); // show immediately with cached/default data
+    // ALL users — admin AND sales reps — always fetch latest from GitHub
+    fetchBillsFromGithub().then(bills=>{
+      if(bills && bills.length > 0){
+        BILLS = bills;
+        saveBills(BILLS);
+        renderAll();
+        console.info('[VJI] Fetched ' + bills.length + ' bills from GitHub.');
+      }
+    }).catch(e=> console.info('[VJI] GitHub fetch failed (offline?):', e.message));
+  }
+})();
+</script>
+</body>
+</html>
