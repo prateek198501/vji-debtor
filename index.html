@@ -1178,30 +1178,38 @@ const GITHUB_FILE_PATH  = 'bills.json';
 
 function saveGithubUrl(url){ localStorage.setItem(GITHUB_URL_KEY, url); }
 function loadGithubUrl(){
-  // Always return the hardcoded URL — ignore any old saved URL
-  return 'https://raw.githubusercontent.com/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/main/' + GITHUB_FILE_PATH;
+  // Display URL — the fetch function tries both main and master automatically
+  return 'https://raw.githubusercontent.com/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/main-or-master/' + GITHUB_FILE_PATH;
 }
 
 async function fetchBillsFromGithub(){
-  // Use GitHub Contents API — always returns latest commit, no CDN caching
-  const apiUrl = 'https://api.github.com/repos/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/contents/' + GITHUB_FILE_PATH;
+  const base = 'https://api.github.com/repos/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME;
+  const rawBase = 'https://raw.githubusercontent.com/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME;
+  const nc = '?nocache=' + Date.now();
+
+  // Try GitHub API first (no cache, works on both main & master branches)
   try {
-    const resp = await fetch(apiUrl, {
-      headers: { 'Accept': 'application/vnd.github.v3.raw' }
-    });
-    if(!resp.ok) throw new Error('GitHub API HTTP ' + resp.status);
-    const data = await resp.json();
-    if(Array.isArray(data) && data.length > 0) return data;
-    throw new Error('empty or invalid data from API');
-  } catch(apiErr) {
-    // Fallback: raw URL with strong cache-bust
-    console.info('[VJI] API fetch failed, trying raw URL:', apiErr.message);
-    const rawUrl = 'https://raw.githubusercontent.com/' + GITHUB_REPO_OWNER + '/' + GITHUB_REPO_NAME + '/main/' + GITHUB_FILE_PATH + '?nocache=' + Date.now();
-    const resp2 = await fetch(rawUrl, { cache: 'no-store' });
-    if(!resp2.ok) throw new Error('Raw URL HTTP ' + resp2.status);
-    const data2 = await resp2.json();
-    return Array.isArray(data2) ? data2 : null;
-  }
+    const apiUrl = base + '/contents/' + GITHUB_FILE_PATH;
+    const resp = await fetch(apiUrl, { headers: { 'Accept': 'application/vnd.github.v3.raw' } });
+    if(resp.ok){
+      const data = await resp.json();
+      if(Array.isArray(data) && data.length > 0) return data;
+    }
+  } catch(e){ console.info('[VJI] API fetch failed:', e.message); }
+
+  // Try raw URL on "main" branch
+  try {
+    const resp = await fetch(rawBase + '/main/' + GITHUB_FILE_PATH + nc, { cache: 'no-store' });
+    if(resp.ok){ const d = await resp.json(); if(Array.isArray(d) && d.length > 0) return d; }
+  } catch(e){}
+
+  // Try raw URL on "master" branch (older GitHub repos use this)
+  try {
+    const resp = await fetch(rawBase + '/master/' + GITHUB_FILE_PATH + nc, { cache: 'no-store' });
+    if(resp.ok){ const d = await resp.json(); if(Array.isArray(d) && d.length > 0) return d; }
+  } catch(e){}
+
+  throw new Error('bills.json not found on GitHub. Please upload it to your repo (main or master branch).');
 }
 
 function downloadJsonFile(bills){
