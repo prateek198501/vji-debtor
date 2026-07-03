@@ -1,47 +1,23 @@
 [
   {
-    "party": "Ab Jewels",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-05-12",
-    "ref": "VJIB/2627/061",
-    "amount": 2307356,
-    "due": "2026-08-10"
-  },
-  {
-    "party": "Ab Jewels",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-05-27",
-    "ref": "VJIB/2627/079",
-    "amount": 217230,
-    "due": "2026-08-25"
-  },
-  {
     "party": "Advika Jain",
     "rep": "N/A",
     "date": "2026-06-02",
     "ref": "VJIB/2627/090",
     "amount": 3791423,
-    "due": "2026-07-02"
+    "due": "2026-08-01"
   },
   {
     "party": "A-Jewels",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-04-29",
     "ref": "VJIB/2627/038",
     "amount": 2329075,
     "due": "2026-06-28"
   },
   {
-    "party": "A-Jewels",
-    "rep": "Shailendra Jain",
-    "date": "2026-06-07",
-    "ref": "VJIB/2627/101",
-    "amount": 905404,
-    "due": "2026-08-06"
-  },
-  {
     "party": "AKM Mehra Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2024-05-01",
     "ref": "VJIB/24-25/028",
     "amount": 494497,
@@ -49,7 +25,7 @@
   },
   {
     "party": "AKM Mehra Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2024-05-16",
     "ref": "VJIB/24-25/037",
     "amount": 2025942,
@@ -57,7 +33,7 @@
   },
   {
     "party": "AKM Mehra Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2024-06-13",
     "ref": "VJIB/24-25/055",
     "amount": 422662,
@@ -65,7 +41,7 @@
   },
   {
     "party": "AKM Mehra Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2024-07-09",
     "ref": "VJIB/24-25/070",
     "amount": 26631,
@@ -73,7 +49,7 @@
   },
   {
     "party": "AKM Mehra Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2024-07-22",
     "ref": "VJIB/24-25/076",
     "amount": 957123,
@@ -81,7 +57,7 @@
   },
   {
     "party": "AKM Mehra Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2024-09-05",
     "ref": "VJIB/24-25/104",
     "amount": 863180,
@@ -89,7 +65,7 @@
   },
   {
     "party": "Alankar Jewel Arts Pvt Ltd",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-05-29",
     "ref": "VJIB/2627/084",
     "amount": 2252019,
@@ -97,47 +73,15 @@
   },
   {
     "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-01-19",
-    "ref": "VJIB/25-26/312",
-    "amount": 59706,
-    "due": "2026-03-20"
-  },
-  {
-    "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-02-02",
-    "ref": "VJIB/25-26/340",
-    "amount": 204876,
-    "due": "2026-04-03"
-  },
-  {
-    "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-02-15",
-    "ref": "VJIB/25-26/359",
-    "amount": 501879,
-    "due": "2026-04-16"
-  },
-  {
-    "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-03-12",
-    "ref": "VJIB/25-26/390",
-    "amount": 162729,
-    "due": "2026-05-11"
-  },
-  {
-    "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-02",
     "ref": "VJIB/2627/008",
-    "amount": 4082437,
+    "amount": 3011627,
     "due": "2026-06-01"
   },
   {
     "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-09",
     "ref": "VJIB/2627/020",
     "amount": 185230,
@@ -145,7 +89,7 @@
   },
   {
     "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-10",
     "ref": "VJIB/2627/056",
     "amount": 922356,
@@ -153,15 +97,31 @@
   },
   {
     "party": "Anmol Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-14",
     "ref": "VJIB/2627/063",
     "amount": 190778,
     "due": "2026-07-13"
   },
   {
+    "party": "Anmol Jewellers",
+    "rep": "N/A",
+    "date": "2026-06-26",
+    "ref": "VJIB/2627/126",
+    "amount": 1375740,
+    "due": "2026-08-25"
+  },
+  {
+    "party": "Anmol Jewellers",
+    "rep": "N/A",
+    "date": "2026-06-26",
+    "ref": "VJIB/2627/127",
+    "amount": 2037789,
+    "due": "2026-08-25"
+  },
+  {
     "party": "Aurum by Sethis",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-04",
     "ref": "VJIB/2627/097",
     "amount": 18378,
@@ -177,7 +137,7 @@
   },
   {
     "party": "Bhola Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-05",
     "ref": "VJIB/25-26/397",
     "amount": 79626,
@@ -185,7 +145,7 @@
   },
   {
     "party": "Bhola Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-01",
     "ref": "VJIB/2627/003",
     "amount": 192092,
@@ -193,7 +153,7 @@
   },
   {
     "party": "Bhola Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-06",
     "ref": "VJIB/2627/011",
     "amount": 171377,
@@ -201,7 +161,7 @@
   },
   {
     "party": "Bhola Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-10",
     "ref": "VJIB/2627/021",
     "amount": 197894,
@@ -209,7 +169,7 @@
   },
   {
     "party": "Bhola Sons Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-24",
     "ref": "VJIB/2627/070",
     "amount": 865243,
@@ -217,7 +177,7 @@
   },
   {
     "party": "C.H. Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-02-18",
     "ref": "VJIB/25-26/364",
     "amount": 10421860,
@@ -225,7 +185,7 @@
   },
   {
     "party": "C.H. Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-06",
     "ref": "VJIB/25-26/382",
     "amount": 466587,
@@ -233,7 +193,7 @@
   },
   {
     "party": "C.H. Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-23",
     "ref": "VJIB/25-26/399",
     "amount": 15304488,
@@ -241,7 +201,7 @@
   },
   {
     "party": "C.H. Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-22",
     "ref": "VJIB/2627/032",
     "amount": 71670,
@@ -249,7 +209,7 @@
   },
   {
     "party": "C.H. Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-01",
     "ref": "VJIB/2627/045",
     "amount": 1968501,
@@ -273,23 +233,15 @@
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-03-11",
-    "ref": "VJIB/25-26/387",
-    "amount": 3658247,
-    "due": "2026-05-10"
-  },
-  {
-    "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-19",
     "ref": "VJIB/25-26/393",
-    "amount": 2259658,
+    "amount": 1417905,
     "due": "2026-05-18"
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-25",
     "ref": "VJIB/25-26/402",
     "amount": 882303,
@@ -297,7 +249,7 @@
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-08",
     "ref": "VJIB/2627/017",
     "amount": 568406,
@@ -305,7 +257,7 @@
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-18",
     "ref": "VJIB/2627/066",
     "amount": 1327963,
@@ -313,7 +265,7 @@
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-26",
     "ref": "VJIB/2627/075",
     "amount": 1306286,
@@ -321,7 +273,7 @@
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-15",
     "ref": "VJIB/2627/108",
     "amount": 88390,
@@ -329,7 +281,7 @@
   },
   {
     "party": "D.P. Abhushan Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-17",
     "ref": "VJIB/2627/111",
     "amount": 209778,
@@ -340,8 +292,16 @@
     "rep": "N/A",
     "date": "2026-04-30",
     "ref": "VJIB/2627/042",
-    "amount": 3914000,
+    "amount": 3800,
     "due": "2026-06-29"
+  },
+  {
+    "party": "Dynamic International ( Import )",
+    "rep": "N/A",
+    "date": "2026-06-25",
+    "ref": "388",
+    "amount": 430113,
+    "due": "2026-12-02"
   },
   {
     "party": "Fine Gems And Jewels ( Export )",
@@ -361,7 +321,7 @@
   },
   {
     "party": "Frontier Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-09-14",
     "ref": "VJIB/25-26/159",
     "amount": 742,
@@ -369,7 +329,7 @@
   },
   {
     "party": "Frontier Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-01-12",
     "ref": "VJIB/25-26/295",
     "amount": 2272843,
@@ -377,7 +337,7 @@
   },
   {
     "party": "Frontier Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-01-22",
     "ref": "VJIB/25-26/320",
     "amount": 61959,
@@ -385,7 +345,7 @@
   },
   {
     "party": "Gandhi Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-26",
     "ref": "VJIB/2627/076",
     "amount": 2471291,
@@ -393,7 +353,7 @@
   },
   {
     "party": "GDK Jewels Pvt Ltd",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-04-08",
     "ref": "VJIB/2627/019",
     "amount": 2119803,
@@ -401,7 +361,7 @@
   },
   {
     "party": "Gehna Gems & Jewels Pvt Ltd",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-04-17",
     "ref": "VJIB/2627/027",
     "amount": 2165,
@@ -433,7 +393,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-11-02",
     "ref": "VJIB/25-26/216",
     "amount": 1485828,
@@ -441,7 +401,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-11-05",
     "ref": "VJIB/25-26/223",
     "amount": 209442,
@@ -449,7 +409,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-11-18",
     "ref": "VJIB/25-26/237",
     "amount": 15656000,
@@ -457,7 +417,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-12-09",
     "ref": "VJIB/25-26/262",
     "amount": 296944,
@@ -465,7 +425,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-01-02",
     "ref": "VJIB/25-26/282",
     "amount": 11039752,
@@ -473,7 +433,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-03-04",
     "ref": "VJIB/25-26/377",
     "amount": 3802396,
@@ -481,7 +441,7 @@
   },
   {
     "party": "Gems and Jewels Palace",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-03-27",
     "ref": "VJIB/25-26/405",
     "amount": 6872,
@@ -496,8 +456,8 @@
     "due": "2026-04-24"
   },
   {
-    "party": "Hari Prasad Gopi Kirshna Safar Pvt. Ltd.",
-    "rep": "Shailendra Jain",
+    "party": "Hari Prasad Gopi Krishna Saraf Pvt Ltd",
+    "rep": "N/A",
     "date": "2026-06-21",
     "ref": "VJIB/2627/117",
     "amount": 107798,
@@ -505,39 +465,15 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
-    "date": "2025-08-12",
-    "ref": "VJIB/25-26/107",
-    "amount": 746736,
-    "due": "2025-11-10"
-  },
-  {
-    "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
-    "date": "2025-08-25",
-    "ref": "VJIB/25-26/126",
-    "amount": 1694049,
-    "due": "2025-11-23"
-  },
-  {
-    "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
-    "date": "2025-09-02",
-    "ref": "VJIB/25-26/139",
-    "amount": 369260,
-    "due": "2025-12-01"
-  },
-  {
-    "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-09-03",
     "ref": "VJIB/25-26/145",
-    "amount": 1747764,
+    "amount": 1557809,
     "due": "2025-12-02"
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-09-04",
     "ref": "VJIB/25-26/146",
     "amount": 1324717,
@@ -545,7 +481,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-09-18",
     "ref": "VJIB/25-26/162",
     "amount": 261878,
@@ -553,7 +489,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-09-24",
     "ref": "VJIB/25-26/171",
     "amount": 1805,
@@ -561,7 +497,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-10-08",
     "ref": "VJIB/25-26/194",
     "amount": 155228,
@@ -569,7 +505,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-11-04",
     "ref": "VJIB/25-26/221",
     "amount": 53600,
@@ -577,7 +513,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-15",
     "ref": "VJIB/25-26/300",
     "amount": 158913,
@@ -585,7 +521,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-20",
     "ref": "VJIB/25-26/314",
     "amount": 75002,
@@ -593,7 +529,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-21",
     "ref": "VJIB/25-26/316",
     "amount": 196773,
@@ -601,7 +537,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-28",
     "ref": "VJIB/25-26/332",
     "amount": 79747,
@@ -609,7 +545,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-15",
     "ref": "VJIB/2627/023",
     "amount": 6606698,
@@ -617,7 +553,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-16",
     "ref": "VJIB/2627/026",
     "amount": 22494,
@@ -625,7 +561,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-30",
     "ref": "VJIB/2627/041",
     "amount": 803273,
@@ -633,7 +569,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-18",
     "ref": "VJIB/2627/065",
     "amount": 313060,
@@ -641,7 +577,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-25",
     "ref": "VJIB/2627/072",
     "amount": 113829,
@@ -649,7 +585,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-27",
     "ref": "VJIB/2627/078",
     "amount": 1493124,
@@ -657,7 +593,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Lucknow Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-31",
     "ref": "VJIB/2627/087",
     "amount": 100611,
@@ -665,7 +601,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-20",
     "ref": "VJIB/2627/028",
     "amount": 91174,
@@ -673,7 +609,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-27",
     "ref": "VJIB/2627/037",
     "amount": 95877,
@@ -681,7 +617,7 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-01",
     "ref": "VJIB/2627/044",
     "amount": 146932,
@@ -689,23 +625,39 @@
   },
   {
     "party": "Harsahaimal Shiamlal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-08",
     "ref": "VJIB/2627/102",
     "amount": 15508706,
     "due": "2026-08-07"
   },
   {
+    "party": "Harsahaimal Shiamlal Jewellers Pvt Ltd",
+    "rep": "N/A",
+    "date": "2026-06-25",
+    "ref": "VJIB/2627/122",
+    "amount": 2018087,
+    "due": "2026-08-24"
+  },
+  {
+    "party": "Harsahaimal Shiamlal Jewellers Pvt Ltd",
+    "rep": "N/A",
+    "date": "2026-06-30",
+    "ref": "VJIB/2627/130",
+    "amount": 74974,
+    "due": "2026-08-29"
+  },
+  {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-12-30",
     "ref": "VJIB/25-26/279",
-    "amount": 22269413,
+    "amount": 12269413,
     "due": "2026-03-30"
   },
   {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-16",
     "ref": "VJIB/25-26/304",
     "amount": 2989769,
@@ -713,7 +665,7 @@
   },
   {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-19",
     "ref": "VJIB/25-26/309",
     "amount": 680413,
@@ -721,7 +673,7 @@
   },
   {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-21",
     "ref": "VJIB/25-26/315",
     "amount": 1364989,
@@ -729,7 +681,7 @@
   },
   {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-08",
     "ref": "VJIB/25-26/383",
     "amount": 492737,
@@ -737,7 +689,7 @@
   },
   {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-09",
     "ref": "VJIB/25-26/384",
     "amount": 8835140,
@@ -745,7 +697,7 @@
   },
   {
     "party": "Hazoorilal Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-20",
     "ref": "VJIB/25-26/395",
     "amount": 85043,
@@ -753,7 +705,7 @@
   },
   {
     "party": "Hazoorilal & Sons Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-19",
     "ref": "VJIB/25-26/308",
     "amount": 13759653,
@@ -761,7 +713,7 @@
   },
   {
     "party": "Hazoorilal & Sons Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-28",
     "ref": "VJIB/25-26/330",
     "amount": 148256,
@@ -769,7 +721,7 @@
   },
   {
     "party": "Hazoorilal & Sons Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-06",
     "ref": "VJIB/25-26/381",
     "amount": 6024938,
@@ -777,7 +729,7 @@
   },
   {
     "party": "Hazoorilal & Sons Jewellers Pvt Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-07",
     "ref": "VJIB/2627/015",
     "amount": 5174,
@@ -785,7 +737,7 @@
   },
   {
     "party": "Jaisalmer Arts & Crafts",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-01-04",
     "ref": "VJIB/25-26/283",
     "amount": 2041261,
@@ -793,15 +745,31 @@
   },
   {
     "party": "Jaisalmer Arts & Crafts",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-02-15",
     "ref": "VJIB/25-26/358",
     "amount": 345366,
     "due": "2026-04-16"
   },
   {
+    "party": "Jugal Kishore the Jeweller",
+    "rep": "N/A",
+    "date": "2026-06-24",
+    "ref": "VJIB/2627/119",
+    "amount": 852021,
+    "due": "2026-08-23"
+  },
+  {
+    "party": "Jugal Kishore the Jeweller",
+    "rep": "N/A",
+    "date": "2026-06-24",
+    "ref": "VJIB/2627/120",
+    "amount": 8383413,
+    "due": "2026-08-23"
+  },
+  {
     "party": "Lahore Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-05-07",
     "ref": "VJIB/2627/054",
     "amount": 403179,
@@ -809,7 +777,7 @@
   },
   {
     "party": "Madanlal Chhaganlal Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-12",
     "ref": "VJIB/2627/059",
     "amount": 1392441,
@@ -817,7 +785,7 @@
   },
   {
     "party": "Madanlal Chhaganlal Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-20",
     "ref": "VJIB/2627/068",
     "amount": 404096,
@@ -833,7 +801,7 @@
   },
   {
     "party": "Moti Gold And Diamonds LLP",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-25",
     "ref": "CSRRSB-23",
     "amount": 1746,
@@ -841,7 +809,7 @@
   },
   {
     "party": "Moti Gold And Diamonds LLP",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-03",
     "ref": "VJIB/2627/092",
     "amount": 1396075,
@@ -865,7 +833,7 @@
   },
   {
     "party": "Neelkanth Gold and Diamonds Private Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-10-07",
     "ref": "VJIB/25-26/190",
     "amount": 371817,
@@ -873,7 +841,7 @@
   },
   {
     "party": "Neelkanth Gold and Diamonds Private Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-03-03",
     "ref": "VJIB/25-26/376",
     "amount": 59792,
@@ -881,15 +849,31 @@
   },
   {
     "party": "Neelkanth Gold and Diamonds Private Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-09",
     "ref": "VJIB/2627/104",
     "amount": 194789,
     "due": "2026-08-08"
   },
   {
+    "party": "Neelkanth Gold and Diamonds Private Limited",
+    "rep": "N/A",
+    "date": "2026-06-22",
+    "ref": "VJIB/2627/118",
+    "amount": 11031125,
+    "due": "2026-08-21"
+  },
+  {
+    "party": "Neelkanth Gold and Diamonds Private Limited",
+    "rep": "N/A",
+    "date": "2026-06-29",
+    "ref": "VJIB/2627/129",
+    "amount": 1819885,
+    "due": "2026-08-28"
+  },
+  {
     "party": "Neelkanth Jewellers Private Limited",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-06-02",
     "ref": "VJIB/2627/089",
     "amount": 1524,
@@ -905,27 +889,19 @@
   },
   {
     "party": "OPS Jewells Pvt Ltd",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-04-22",
     "ref": "VJIB/2627/030",
-    "amount": 1344600,
+    "amount": 844600,
     "due": "2026-06-21"
   },
   {
     "party": "OPS Jewells Pvt Ltd",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-05-26",
     "ref": "VJIB/2627/DN15",
     "amount": 9896,
     "due": "2026-07-25"
-  },
-  {
-    "party": "Panna Diamond World LLP",
-    "rep": "N/A",
-    "date": "2025-03-03",
-    "ref": "VJIB/24-25/272",
-    "amount": 256244,
-    "due": "2025-05-02"
   },
   {
     "party": "Panna Diamond World LLP",
@@ -937,7 +913,7 @@
   },
   {
     "party": "Panna Handicrafts",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-12-03",
     "ref": "VJIB/25-26/256",
     "amount": 4041866,
@@ -945,15 +921,31 @@
   },
   {
     "party": "P.C Chandra & Sons (India) Pvt Ltd BB",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-20",
     "ref": "VJIB/2627/067",
-    "amount": 1995791,
+    "amount": 1985751,
     "due": "2026-07-19"
   },
   {
+    "party": "P.C Chandra & Sons (India) Pvt Ltd BB",
+    "rep": "N/A",
+    "date": "2026-06-30",
+    "ref": "VJIB/2627/131",
+    "amount": 1143171,
+    "due": "2026-08-29"
+  },
+  {
+    "party": "P.C Chnadra ( Gems) Pvt Ltd ( UD)",
+    "rep": "N/A",
+    "date": "2026-06-24",
+    "ref": "VJIB/2627/121",
+    "amount": 4292980,
+    "due": "2026-08-23"
+  },
+  {
     "party": "P N Gadgil Jewellers Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-05-23",
     "ref": "VJIB/25-26/045",
     "amount": 12300,
@@ -961,7 +953,7 @@
   },
   {
     "party": "P N Gadgil Jewellers Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-11-09",
     "ref": "VJIB/25-26/225",
     "amount": 323948,
@@ -1001,7 +993,7 @@
   },
   {
     "party": "Punjab Jewels & Gems",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-03-24",
     "ref": "VJIB/25-26/401",
     "amount": 392121,
@@ -1009,15 +1001,15 @@
   },
   {
     "party": "Ranka Jewellers & Sons Private Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-10-14",
     "ref": "VJIB/25-26/201",
-    "amount": 5785037,
+    "amount": 3785037,
     "due": "2025-12-13"
   },
   {
     "party": "Ranka Jewellers & Sons Private Limited",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-01-05",
     "ref": "VJIB/25-26/285",
     "amount": 449237,
@@ -1025,15 +1017,15 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-16",
     "ref": "VJIB/2627/024",
-    "amount": 510911,
+    "amount": 455712,
     "due": "2026-07-15"
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-03",
     "ref": "VJIB/2627/047",
     "amount": 3080152,
@@ -1041,7 +1033,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-04",
     "ref": "VJIB/2627/050",
     "amount": 239290,
@@ -1049,7 +1041,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-07",
     "ref": "VJIB/2627/055",
     "amount": 49858,
@@ -1057,7 +1049,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-11",
     "ref": "VJIB/2627/058",
     "amount": 801504,
@@ -1065,7 +1057,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-13",
     "ref": "VJIB/2627/062",
     "amount": 230052,
@@ -1073,7 +1065,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-24",
     "ref": "VJIB/2627/069",
     "amount": 38665,
@@ -1081,7 +1073,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-25",
     "ref": "VJIB/2627/073",
     "amount": 47945,
@@ -1089,7 +1081,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-05-28",
     "ref": "VJIB/2627/080",
     "amount": 256754,
@@ -1097,7 +1089,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-03",
     "ref": "VJIB/2627/091",
     "amount": 382554,
@@ -1105,7 +1097,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-04",
     "ref": "VJIB/2627/093",
     "amount": 1684,
@@ -1113,7 +1105,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-11",
     "ref": "VJIB/2627/107",
     "amount": 69422,
@@ -1121,7 +1113,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-16",
     "ref": "VJIB/2627/109",
     "amount": 5918,
@@ -1129,7 +1121,7 @@
   },
   {
     "party": "Rathod Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-17",
     "ref": "VJIB/2627/110",
     "amount": 221007,
@@ -1137,27 +1129,11 @@
   },
   {
     "party": "Ratlam Abhushan Pvt.Ltd",
-    "rep": "Hansraj Kunteta",
-    "date": "2026-05-26",
-    "ref": "VJIB/2627/077",
-    "amount": 168310,
-    "due": "2026-07-25"
-  },
-  {
-    "party": "Ratlam Abhushan Pvt.Ltd",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-06-04",
     "ref": "VJIB/2627/096",
-    "amount": 331056,
+    "amount": 149483,
     "due": "2026-08-03"
-  },
-  {
-    "party": "RCS Gem Co., Ltd ( Import )",
-    "rep": "N/A",
-    "date": "2026-05-29",
-    "ref": "234",
-    "amount": 705600,
-    "due": "2026-07-13"
   },
   {
     "party": "Regal Jewellers LLP",
@@ -1201,7 +1177,7 @@
   },
   {
     "party": "Rikhab Das Udai Chand",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2026-04-23",
     "ref": "VJIB/2627/033",
     "amount": 783775,
@@ -1217,7 +1193,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-01-17",
     "ref": "VJIB/24-25/228",
     "amount": 1560147,
@@ -1225,7 +1201,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-04-07",
     "ref": "VJIB/25-26/005",
     "amount": 2951508,
@@ -1233,7 +1209,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-06-09",
     "ref": "VJIB/25-26/061",
     "amount": 1871887,
@@ -1241,7 +1217,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-07-10",
     "ref": "VJIB/25-26/085",
     "amount": 3838788,
@@ -1249,7 +1225,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-07-14",
     "ref": "VJIB/25-26/089",
     "amount": 157193,
@@ -1257,7 +1233,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-08-19",
     "ref": "VJIB/25-26/116",
     "amount": 1186505,
@@ -1265,7 +1241,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-08-22",
     "ref": "VJIB/25-26/123",
     "amount": 2090458,
@@ -1273,7 +1249,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-08-29",
     "ref": "VJIB/25-26/130",
     "amount": 18250859,
@@ -1281,7 +1257,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-09-02",
     "ref": "VJIB/25-26/140",
     "amount": 1584188,
@@ -1289,7 +1265,7 @@
   },
   {
     "party": "Shri Krishna Jewellers Pvt Ltd ( B-Hills)",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-10-28",
     "ref": "VJIB/25-26/210",
     "amount": 1012918,
@@ -1297,7 +1273,7 @@
   },
   {
     "party": "Shri Ram Hari Ram Jewellers",
-    "rep": "Hansraj Kunteta",
+    "rep": "N/A",
     "date": "2025-11-10",
     "ref": "VJIB/25-26/230",
     "amount": 217170,
@@ -1305,7 +1281,7 @@
   },
   {
     "party": "Solitaire Diamond Boutique",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-02-25",
     "ref": "VJIB/25-26/374",
     "amount": 280000,
@@ -1313,15 +1289,15 @@
   },
   {
     "party": "Solitaire Diamond Boutique",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-06-10",
     "ref": "VJIB/2627/105",
     "amount": 2887,
     "due": "2026-08-09"
   },
   {
-    "party": "Starfire Gems Private Limited",
-    "rep": "Hansraj Kunteta",
+    "party": "Starfire Gems Pvt Ltd",
+    "rep": "N/A",
     "date": "2026-06-19",
     "ref": "VJIB/2627/113",
     "amount": 305919,
@@ -1329,7 +1305,7 @@
   },
   {
     "party": "Tarun Jethi A Luxury Jeweller",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2025-08-18",
     "ref": "VJIB/25-26/115",
     "amount": 435289,
@@ -1337,7 +1313,7 @@
   },
   {
     "party": "Tarun Jethi A Luxury Jeweller",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-02-18",
     "ref": "VJIB/25-26/365",
     "amount": 153637,
@@ -1345,7 +1321,7 @@
   },
   {
     "party": "Tarun Jethi A Luxury Jeweller",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-03-27",
     "ref": "VJIB/25-26/403",
     "amount": 291233,
@@ -1364,7 +1340,7 @@
     "rep": "N/A",
     "date": "2026-06-01",
     "ref": "VJIB/2627/088",
-    "amount": 43403,
+    "amount": 42576,
     "due": "2026-08-30"
   },
   {
@@ -1372,7 +1348,7 @@
     "rep": "N/A",
     "date": "2026-06-05",
     "ref": "VJIB/2627/098",
-    "amount": 15219,
+    "amount": 14929,
     "due": "2026-09-03"
   },
   {
@@ -1380,7 +1356,7 @@
     "rep": "N/A",
     "date": "2026-06-10",
     "ref": "VJIB/2627/106",
-    "amount": 15795,
+    "amount": 15494,
     "due": "2026-09-08"
   },
   {
@@ -1388,28 +1364,36 @@
     "rep": "N/A",
     "date": "2026-06-21",
     "ref": "VJIB/2627/116",
-    "amount": 6177,
-    "due": "2026-09-18"
+    "amount": 6059,
+    "due": "2026-09-19"
+  },
+  {
+    "party": "Valentine Jewellery (I) Pvt.Ltd.",
+    "rep": "N/A",
+    "date": "2026-06-25",
+    "ref": "VJIB/2627/123",
+    "amount": 3008,
+    "due": "2026-09-23"
+  },
+  {
+    "party": "Valentine Jewellery (I) Pvt.Ltd.",
+    "rep": "N/A",
+    "date": "2026-06-29",
+    "ref": "VJIB/2627/128",
+    "amount": 5071,
+    "due": "2026-09-27"
   },
   {
     "party": "Vijay Jewellers",
-    "rep": "Shailendra Jain",
-    "date": "2026-02-13",
-    "ref": "VJIB/25-26/357",
-    "amount": 132421,
-    "due": "2026-04-14"
-  },
-  {
-    "party": "Vijay Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-05-26",
     "ref": "VJIB/2627/074",
-    "amount": 660908,
+    "amount": 293329,
     "due": "2026-07-25"
   },
   {
     "party": "Vijay Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-05-31",
     "ref": "VJIB/2627/086",
     "amount": 178552,
@@ -1417,7 +1401,7 @@
   },
   {
     "party": "Vijay Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-06-04",
     "ref": "VJIB/2627/095",
     "amount": 494753,
@@ -1425,7 +1409,7 @@
   },
   {
     "party": "Vijay Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-06-09",
     "ref": "VJIB/2627/103",
     "amount": 266748,
@@ -1433,7 +1417,7 @@
   },
   {
     "party": "Vijay Jewellers",
-    "rep": "Shailendra Jain",
+    "rep": "N/A",
     "date": "2026-06-19",
     "ref": "VJIB/2627/114",
     "amount": 269031,
@@ -1460,7 +1444,7 @@
     "rep": "N/A",
     "date": "2026-06-19",
     "ref": "VJIB/2627/115",
-    "amount": 908182,
+    "amount": 601184,
     "due": "2026-08-18"
   }
 ]
