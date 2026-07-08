@@ -248,6 +248,10 @@
   .empty-state{text-align:center; padding:60px 20px; color:var(--ink-soft);}
   .empty-state .e-icon{font-size:38px; margin-bottom:10px;}
 
+  html, body{overflow-x:hidden; width:100%;}
+  *{min-width:0;}
+  img, svg{max-width:100%;}
+
   @media(max-width:900px){
     .summary-grid{grid-template-columns:repeat(2,1fr);}
     main{padding:18px 14px 50px;}
@@ -256,6 +260,51 @@
   @media(max-width:560px){
     .summary-grid{grid-template-columns:1fr 1fr;}
     .client-amt .cnt{display:none;}
+
+    .controls-row{gap:10px;}
+    .search-box{width:100%; flex:1 1 100%;}
+    select#sortSel, select#repFilterSel{width:100%; flex:1 1 100%;}
+    .quick-btns{width:100%;}
+    .qbtn{flex:1 1 auto; text-align:center;}
+
+    .client-head{padding:14px; gap:10px;}
+    .client-avatar{width:36px; height:36px; font-size:13px;}
+    .client-name{font-size:14px;}
+    .client-amt .amt{font-size:14.5px;}
+    .client-body-inner{padding:0 14px 16px;}
+
+    .rep-row{flex-wrap:wrap;}
+    .rep-row select, .rep-row input, .rep-row button{width:100%; flex:1 1 100%;}
+
+    /* Stacked, label/value card layout for bill tables — mirrors the account summary rows */
+    table.bills-table, table.bills-table thead, table.bills-table tbody,
+    table.bills-table tr, table.bills-table th, table.bills-table td{
+      display:block; width:100%;
+    }
+    table.bills-table thead{display:none;}
+    table.bills-table tr{
+      background:#fff; border:1px solid var(--border); border-radius:14px;
+      padding:4px 14px; margin-bottom:12px;
+    }
+    table.bills-table td{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:11px 0; border-bottom:1px dashed var(--border);
+      text-align:right; font-size:14px; font-weight:700;
+    }
+    table.bills-table td:last-child{border-bottom:none;}
+    table.bills-table td::before{
+      content:attr(data-label);
+      font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+      color:var(--ink-soft); text-align:left; flex-shrink:0;
+    }
+
+    .note-add{flex-wrap:wrap;}
+    .note-add input[type=text]{flex:1 1 100%;}
+    .note-add input[type=text]{width:100%;}
+    .note-add button{flex:1 1 100%;}
+
+    #loginScreen{padding:14px;}
+    .login-card{padding:26px 20px;}
   }
 </style>
 </head>
@@ -730,11 +779,11 @@ function renderClientCard(c, visibleBills){
                         : cls==='due7' ? `<span class="od-chip od-yellow">Due in ${daysUntil(b.dueOn)}d</span>`
                         : `<span class="od-chip od-green">Upcoming</span>`;
               return `<tr>
-                <td>${fmtDate(b.date)}</td>
-                <td>${escapeHtml(b.ref)}</td>
-                <td>${fmtINR(b.amount)}</td>
-                <td>${fmtDate(b.dueOn)}</td>
-                <td>${chip}</td>
+                <td data-label="Bill Date">${fmtDate(b.date)}</td>
+                <td data-label="Ref No.">${escapeHtml(b.ref)}</td>
+                <td data-label="Amount">${fmtINR(b.amount)}</td>
+                <td data-label="Due On">${fmtDate(b.dueOn)}</td>
+                <td data-label="Overdue">${chip}</td>
               </tr>`;
             }).join('')}
           </tbody>
